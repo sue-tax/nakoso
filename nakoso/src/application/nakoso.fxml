@@ -99,29 +99,28 @@
               <font>
                 <Font size="14.0" fx:id="x1" />
               </font>
-              <textFill>
-                <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
-              </textFill>
             </Label>
                   <Button fx:id="buttonPDFOpen" layoutX="196.0" layoutY="10.0" mnemonicParsing="false" onAction="#onPDFOpenAction" text="開く" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                  <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="16.0" layoutY="50.0" prefHeight="488.0" prefWidth="207.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="40.0">
+                  <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="16.0" layoutY="50.0" prefHeight="488.0" prefWidth="207.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="40.0">
                      <content>
                         <TextArea fx:id="textPDF" minHeight="200.0" minWidth="200.0" prefHeight="505.0" prefWidth="211.0" />
                      </content>
                   </ScrollPane>
                   <TextField fx:id="textPDFFile" editable="false" layoutX="95.0" layoutY="2.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />
+          <Label alignment="CENTER" font="$x1" layoutX="24.0" layoutY="516.0" style="&#10;" text="変更ファイル名" textAlignment="CENTER" wrapText="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" />
+                  <Button fx:id="buttonRename" layoutX="165.0" layoutY="520.0" mnemonicParsing="false" onAction="#onRenameFileAction" text="変更" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+                  <TextField fx:id="textNewFile" editable="false" layoutX="98.0" layoutY="517.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" />
           </children>
         </AnchorPane>
       <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="442.0">
         <children>
-          <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="変更ファイル名" textAlignment="CENTER" textFill="$x2" wrapText="false" />
                   <Button fx:id="buttonConfigOpen" layoutX="364.0" layoutY="506.0" mnemonicParsing="false" onAction="#onConfigOpenAction" text="開く" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
                   <Label layoutX="14.0" layoutY="519.0" text="設定ファイル名" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="textConfig" layoutX="105.0" layoutY="519.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="50.0" />
+                  <TextField fx:id="textConfig" editable="false" layoutX="105.0" layoutY="519.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="50.0" />
                   <Label fx:id="labelPdfFile" layoutX="12.0" layoutY="40.0" prefHeight="17.0" prefWidth="114.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="143.0" AnchorPane.topAnchor="40.0">
                      <font>
                         <Font size="18.0" />
@@ -131,7 +130,7 @@
       </AnchorPane>
         <AnchorPane>
           <children>
-            <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Details" textAlignment="CENTER" textFill="$x2" wrapText="false" />
+            <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Details" textAlignment="CENTER" wrapText="false" />
           </children>
         </AnchorPane>
       </items>

@@ -37,6 +37,9 @@ public class Controller {
     private Button buttonPDFOpen;
 
     @FXML
+    private Button buttonRename;
+
+    @FXML
     private Label labelPdfFile;
 
     @FXML
@@ -44,6 +47,9 @@ public class Controller {
 
     @FXML
     private TextField textMsg;
+
+    @FXML
+    private TextField textNewFile;
 
     @FXML
     private TextArea textPDF;
@@ -236,19 +242,25 @@ public class Controller {
 
 
     @FXML
+    void onRenameFileAction(ActionEvent event) {
+
+    }
+
+    @FXML
     void initialize() {
         assert buttonConfigOpen != null : "fx:id=\"buttonConfigOpen\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert buttonPDFOpen != null : "fx:id=\"buttonPDFOpen\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert buttonRename != null : "fx:id=\"buttonRename\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert labelPdfFile != null : "fx:id=\"labelPdfFile\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textConfig != null : "fx:id=\"textConfig\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textMsg != null : "fx:id=\"textMsg\" was not injected: check your FXML file 'nakoso.fxml'.";
-        assert textPDFFile != null : "fx:id=\"textPDFFile\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert textNewFile != null : "fx:id=\"textNewFile\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textPDF != null : "fx:id=\"textPDF\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert textPDFFile != null : "fx:id=\"textPDFFile\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert x1 != null : "fx:id=\"x1\" was not injected: check your FXML file 'nakoso.fxml'.";
-        assert x2 != null : "fx:id=\"x2\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert x3 != null : "fx:id=\"x3\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert x4 != null : "fx:id=\"x4\" was not injected: check your FXML file 'nakoso.fxml'.";
-    }
 
+    }
 
 }
