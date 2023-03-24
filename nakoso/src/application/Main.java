@@ -15,8 +15,8 @@ public class Main extends Application {
 
 	static String strText;
 
-	static ConfigProc configProc;
-
+	static ConfigProc configProc = null;
+	static FileProc fileProc = null;
 
 	@Override
 	public void start(Stage stage) {

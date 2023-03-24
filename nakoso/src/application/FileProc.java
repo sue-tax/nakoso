@@ -195,6 +195,7 @@ public class FileProc {
         boolean flag = true;
 		try {
 			flag = fOld.renameTo(fNew);
+			this.strFileName = strFile;
 		} catch (Exception e) {
 			flag = false;
 		}

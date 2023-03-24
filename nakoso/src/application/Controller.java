@@ -22,6 +22,7 @@ import javafx.stage.FileChooser;
 public class Controller {
 
 	static String strFileConfig = null;
+	static String strFilePDF = null;
 
 
     @FXML // ResourceBundle that was given to the FXMLLoader
@@ -79,80 +80,68 @@ public class Controller {
     	openConfig();
     }
 
+    @FXML
+    void onRenameFileAction(ActionEvent event) {
+    	renameFile();
+    }
+
+
     void openPDF() {
     	D.dprint_method_start();
 	    FileChooser fileChooser = new FileChooser();
 	    fileChooser.setTitle("PDFファイルの選択");
-//	    if (MainControl.strSrcFileName != null) {
-//	    	File file1 = new File(
-//	    			MainControl.strSrcFileName);
-//	    	File fileDir = new File(file1.getParent());
-//	    	fileChooser.setInitialDirectory(fileDir);
-//	    }
+	    if (strFilePDF != null) {
+	    	File file1 = new File(strFilePDF);
+	    	File fileDir = new File(file1.getParent());
+	    	fileChooser.setInitialDirectory(fileDir);
+	    }
 	    File file = null;
 		try {
 			file = fileChooser.showOpenDialog(Main.stage);
 		} catch (Exception e1) {
-//			printMsg("ファイルの選択ができませんでした。");
+			printMsg("ファイルの選択ができませんでした。");
 			D.dprint_method_end();
 			return;
 		}
 	    if (file == null) {
-//			printMsg("ファイルが選択されませんでした。");
+			printMsg("ファイルが選択されませんでした。");
 			D.dprint_method_end();
 			return;
 		}
-	    String strFilePDF = file.getAbsolutePath();
-		FileProc fileProc = new FileProc(strFilePDF);
+	    String strFile = file.getAbsolutePath();
+		FileProc fileProc = new FileProc(strFile);
 		String strRet = fileProc.readFile();
 		if (strRet != null) {
-//			System.out.println(strRet);
+			printMsg(strRet);
 			D.dprint_method_end();
 			return;
 		}
+		textPDFFile.setEditable(true);
+		textPDFFile.setText(strFile);
+		textPDFFile.end();
+		textPDFFile.setEditable(false);
+
+        Controller.strFilePDF = strFile;
 		String strText = fileProc.getText();
 
-		System.out.println("PDFファイル内のテキスト");
-		System.out.println("==============================");
-		System.out.println(strText);
-		System.out.println("==============================");
+//		System.out.println("PDFファイル内のテキスト");
+//		System.out.println("==============================");
+//		System.out.println(strText);
+//		System.out.println("==============================");
 
-//		Main.strText = strText;
+//		strSrcDisp = "<font color=\"green\">" +
+//				aSrc[i].substring(
+//				o.getDeletedStart(),
+//				o.getDeletedEnd()+1) +
+//				"</font>";
+
+		
 		textPDF.setEditable(true);
-//        textPDF.setText(Main.strText);
         textPDF.setText(strText);
         textPDF.end();
         textPDF.setEditable(false);
-
-		String aStr[] = Main.configProc.getMatchString(
-				1, strText, fileProc);
-
-		if (aStr[0] != null) {
-//			System.out.println(aStr[0]);
-			D.dprint_method_end();
-			return;
-		}
-		String strFileFormat = Main.configProc.getFileFormat();
-		String strFileName = String.format(strFileFormat,
-				aStr[1], aStr[2], aStr[3], aStr[4],
-				aStr[5], aStr[6], aStr[7], aStr[8],
-				aStr[9]);
-		strFileName = fileProc.modifyFileName(strFileName);
-//		System.out.println("ファイル名:" + strFileName);
-
-		boolean flagRename = Main.configProc.getFlagRename();
-		if (flagRename) {
-			boolean flag = fileProc.renameFile(strFileName);
-			if (! flag) {
-//				System.out.println("ファイル名変更に失敗しました");
-			}
-		} else {
-			boolean flag = fileProc.copyFile(strFileName);
-			if (! flag) {
-//				System.out.println("ファイルのコピーに失敗しました");
-			}
-		}
-
+        Main.fileProc = fileProc;
+        analyzeText();
 		D.dprint_method_end();
 		return;
     }
@@ -227,9 +216,82 @@ public class Controller {
 		textConfig.end();
 		textConfig.setEditable(false);
 		printMsg("設定ファイルを読込みました");
+		analyzeText();
 		D.dprint_method_end();
     	return;
     }
+
+
+    private void analyzeText() {
+    	D.dprint_method_start();
+    	if (Main.configProc == null) {
+    		D.dprint_method_end();
+    		return;
+    	}
+    	if (Main.fileProc == null) {
+    		D.dprint_method_end();
+    		return;
+    	}
+    	String strText = Main.fileProc.getText();
+		String aStr[] = Main.configProc.getMatchString(
+				1, strText, Main.fileProc);
+		if (aStr[0] != null) {
+			printMsg(aStr[0]);
+			D.dprint_method_end();
+			return;
+		}
+		String strFileFormat = Main.configProc.getFileFormat();
+		String strFileName = String.format(strFileFormat,
+				aStr[1], aStr[2], aStr[3], aStr[4],
+				aStr[5], aStr[6], aStr[7], aStr[8],
+				aStr[9]);
+		strFileName = Main.fileProc.modifyFileName(strFileName);
+		textNewFile.setEditable(true);
+		textNewFile.setText(strFileName);
+		textNewFile.end();
+		textNewFile.setEditable(false);
+		
+		
+//		strSrcDisp = "<font color=\"green\">" +
+//		aSrc[i].substring(
+//		o.getDeletedStart(),
+//		o.getDeletedEnd()+1) +
+//		"</font>";
+
+
+//textPDF.setEditable(true);
+//textPDF.setText(strText);
+//textPDF.end();
+//textPDF.setEditable(false);
+		D.dprint_method_end();
+		return;
+	}
+
+    private void renameFile() {
+    	D.dprint_method_start();
+		boolean flagRename = Main.configProc.getFlagRename();
+		String strFileName = textNewFile.getText();
+		if (flagRename) {
+			boolean flag = Main.fileProc.renameFile(
+					strFileName);
+			if (flag) {
+				textPDFFile.setEditable(true);
+				textPDFFile.setText(strFileName);
+				textPDFFile.end();
+				textPDFFile.setEditable(false);
+			} else {
+				printMsg("ファイル名変更に失敗しました");
+			}
+		} else {
+			boolean flag = Main.fileProc.copyFile(
+					strFileName);
+			if (! flag) {
+				printMsg("ファイルのコピーに失敗しました");
+			}
+		}
+		D.dprint_method_end();
+		return;
+	}
 
 
     void printMsg( String strMsg ) {
@@ -238,12 +300,6 @@ public class Controller {
 		textMsg.end();
 		textMsg.setEditable(false);
 		return;
-    }
-
-
-    @FXML
-    void onRenameFileAction(ActionEvent event) {
-
     }
 
     @FXML
