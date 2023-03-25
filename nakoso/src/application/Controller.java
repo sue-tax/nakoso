@@ -2,6 +2,8 @@
  * "nakoso.fxml"コントローラ・クラスのサンプル・スケルトン
  */
 
+// fxmlファイルを更新したら、「クリーン」することが必要
+
 package application;
 
 
@@ -51,6 +53,9 @@ public class Controller {
 
     @FXML
     private TextField textNewFile;
+
+    @FXML
+    private TextField textFileFormat;
 
 //    @FXML
 //    private TextArea textPDF;
@@ -206,6 +211,12 @@ public class Controller {
 		textConfig.setText(Controller.strFileConfig);
 		textConfig.end();
 		textConfig.setEditable(false);
+		String strFileFormat = configProc.getFileFormat();
+		textFileFormat.setEditable(true);
+		textFileFormat.setText(strFileFormat);
+		textFileFormat.end();
+		textFileFormat.setEditable(false);
+
 		printMsg("設定ファイルを読込みました");
 		analyzeText();
 		D.dprint_method_end();
@@ -299,6 +310,7 @@ public class Controller {
         assert textConfig != null : "fx:id=\"textConfig\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textMsg != null : "fx:id=\"textMsg\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textNewFile != null : "fx:id=\"textNewFile\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert textFileFormat != null : "fx:id=\"textFileFormat\" was not injected: check your FXML file 'nakoso.fxml'.";
 //        assert textPDF != null : "fx:id=\"textPDF\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert webviewText != null : "fx:id=\"webviewText\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textPDFFile != null : "fx:id=\"textPDFFile\" was not injected: check your FXML file 'nakoso.fxml'.";
