@@ -22,6 +22,8 @@ public class Analysis {
 		private String strName;		// %1$s橋直美
 		private Pattern pattern;
 		private String strExch;
+		private int start;
+		private int end;
 
 		public Item( String strRegex, String strName ) {
 			this.strRegex = strRegex;
@@ -42,7 +44,7 @@ public class Analysis {
 			D.dprint_method_start();
 			D.dprint(this.strRegex);
 			D.dprint(this.strName);
-			int start = Integer.MAX_VALUE;
+			start = Integer.MAX_VALUE;
 			Matcher m = this.pattern.matcher(text);
 			if (m.find()) {
 				D.dprint(m.group(0));
@@ -63,6 +65,7 @@ public class Analysis {
 					strExch = this.strName;
 				}
 				start = m.start();
+				end = m.end();
 			} else {
 				strExch = "";
 			}
@@ -126,8 +129,7 @@ public class Analysis {
 			Item minItem = null;
 			int index;
 			Iterator<Item> iter = itemList.iterator();
-			while(iter.hasNext())
-			{
+			while(iter.hasNext()) {
 			    Item item = (Item)iter.next();
 			    // 正規表現で合致するのを探す
 			    index = item.match(text);
@@ -145,5 +147,95 @@ public class Analysis {
 		D.dprint_method_end();
 		return map;
 	}
+
+
+	public String getColoredString( int indexMap, String strText ) {
+		D.dprint_method_start();
+		D.dprint(strText);
+		List<Item> itemList = mapAnal.get(indexMap);
+		if (itemList == null) {
+			D.dprint_method_end();
+			return strText;
+		}
+		D.dprint(itemList);
+		String strColored;
+		int minIndex = Integer.MAX_VALUE;
+		Item minItem = null;
+		int index;
+		Iterator<Item> iter = itemList.iterator();
+		while(iter.hasNext()) {
+		    Item item = (Item)iter.next();
+		    // 正規表現で合致するのを探す
+		    index = item.match(strText);
+		    if (index < minIndex) {
+		    	minIndex = index;
+		    	minItem = item;
+		    }
+		}
+		if (minItem != null) {
+			// 合致した中で、前にあるものを採用
+			String strC = String.format(
+					"<font color=\"red\">[%d]", indexMap);
+			D.dprint(strC);
+			String str =
+					strText.substring(0, minItem.start)
+					+ strC
+					+ strText.substring(minItem.start,
+							minItem.end)
+					+ "</font>"
+					+ strText.substring(minItem.end);
+			D.dprint(str);
+			strColored = str;
+	    } else {
+	    	strColored = strText;
+	    }
+	    D.dprint(strColored);
+		D.dprint_method_end();
+		return strColored;
+	}
+
+
+
+//	public String getColoredString( String text ) {
+//		D.dprint_method_start();
+//		D.dprint(text);
+//		String strColored = text;
+//		mapAnal.forEach((k, itemList) -> {
+//			D.dprint(k);
+//			D.dprint(itemList);
+//			int minIndex = Integer.MAX_VALUE;
+//			int end;
+//			Item minItem = null;
+//			int index;
+//			Iterator<Item> iter = itemList.iterator();
+//			while(iter.hasNext()) {
+//			    Item item = (Item)iter.next();
+//			    // 正規表現で合致するのを探す
+//			    index = item.match(text);
+//			    if (index < minIndex) {
+//			    	minIndex = index;
+//			    	minItem = item;
+//			    }
+//			}
+//			if (minItem != null) {
+//				// 合致した中で、前にあるものを採用
+////				String strMatch = minItem.getExch();
+//
+//				// 順番によっては、start,endがずれる
+//
+//				strColored =
+//						strColored.substring(0, minItem.start)
+//						+ "<font color=\\\"red\\\">"
+//						+ strColored.substring(minItem.start,
+//								minItem.end)
+//						+ "</font>"
+//						+ strColored.substring(minItem.end);
+//
+//			}
+//		});
+//		D.dprint_method_end();
+//		return map;
+//	}
+
 
 }

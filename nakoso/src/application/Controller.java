@@ -13,10 +13,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 public class Controller {
@@ -52,8 +52,11 @@ public class Controller {
     @FXML
     private TextField textNewFile;
 
+//    @FXML
+//    private TextArea textPDF;
     @FXML
-    private TextArea textPDF;
+    private WebView webviewText;
+
 
     @FXML
     private TextField textPDFFile;
@@ -122,24 +125,12 @@ public class Controller {
 		textPDFFile.setEditable(false);
 
         Controller.strFilePDF = strFile;
-		String strText = fileProc.getText();
+//		String strText = fileProc.getText();
 
-//		System.out.println("PDFファイル内のテキスト");
-//		System.out.println("==============================");
-//		System.out.println(strText);
-//		System.out.println("==============================");
-
-//		strSrcDisp = "<font color=\"green\">" +
-//				aSrc[i].substring(
-//				o.getDeletedStart(),
-//				o.getDeletedEnd()+1) +
-//				"</font>";
-
-		
-		textPDF.setEditable(true);
-        textPDF.setText(strText);
-        textPDF.end();
-        textPDF.setEditable(false);
+//		textPDF.setEditable(true);
+//        textPDF.setText(strText);
+//        textPDF.end();
+//        textPDF.setEditable(false);
         Main.fileProc = fileProc;
         analyzeText();
 		D.dprint_method_end();
@@ -250,19 +241,16 @@ public class Controller {
 		textNewFile.setText(strFileName);
 		textNewFile.end();
 		textNewFile.setEditable(false);
-		
-		
-//		strSrcDisp = "<font color=\"green\">" +
-//		aSrc[i].substring(
-//		o.getDeletedStart(),
-//		o.getDeletedEnd()+1) +
-//		"</font>";
 
-
-//textPDF.setEditable(true);
-//textPDF.setText(strText);
-//textPDF.end();
-//textPDF.setEditable(false);
+		String strHtml = strText.replaceAll("\\n", "<br>");
+		D.dprint(strHtml);
+		String strColored = Main.configProc.getColoredString(
+				strHtml);
+    	webviewText.getEngine().loadContent(strColored);
+//		textPDF.setEditable(true);
+//		textPDF.setText(strColored);
+//		textPDF.end();
+//		textPDF.setEditable(false);
 		D.dprint_method_end();
 		return;
 	}
@@ -311,7 +299,8 @@ public class Controller {
         assert textConfig != null : "fx:id=\"textConfig\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textMsg != null : "fx:id=\"textMsg\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textNewFile != null : "fx:id=\"textNewFile\" was not injected: check your FXML file 'nakoso.fxml'.";
-        assert textPDF != null : "fx:id=\"textPDF\" was not injected: check your FXML file 'nakoso.fxml'.";
+//        assert textPDF != null : "fx:id=\"textPDF\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert webviewText != null : "fx:id=\"webviewText\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textPDFFile != null : "fx:id=\"textPDFFile\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert x1 != null : "fx:id=\"x1\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert x3 != null : "fx:id=\"x3\" was not injected: check your FXML file 'nakoso.fxml'.";

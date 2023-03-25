@@ -520,4 +520,20 @@ public class ConfigProc {
 		D.dprint_method_end();
 		return aStr;
 	}
+
+
+	public String getColoredString( String strText ) {
+		D.dprint_method_start();
+		D.dprint(strText);
+		String strRet = null;
+		String strColoredText = strText;
+		for (int i=1; i<10; i++) {
+			strColoredText = analysis.getColoredString(
+					i, strColoredText);
+		}
+		D.dprint(strColoredText);
+		D.dprint_method_end();
+		return strColoredText;
+	}
+
 }
