@@ -151,7 +151,7 @@ public class Analysis {
 
 	public String getColoredString( int indexMap, String strText ) {
 		D.dprint_method_start();
-		D.dprint(strText);
+//		D.dprint(strText);
 		List<Item> itemList = mapAnal.get(indexMap);
 		if (itemList == null) {
 			D.dprint_method_end();
@@ -176,7 +176,6 @@ public class Analysis {
 			// 合致した中で、前にあるものを採用
 			String strC = String.format(
 					"<font color=\"red\">[%d]", indexMap);
-			D.dprint(strC);
 			String str =
 					strText.substring(0, minItem.start)
 					+ strC
@@ -184,12 +183,11 @@ public class Analysis {
 							minItem.end)
 					+ "</font>"
 					+ strText.substring(minItem.end);
-			D.dprint(str);
 			strColored = str;
 	    } else {
 	    	strColored = strText;
 	    }
-	    D.dprint(strColored);
+//	    D.dprint(strColored);
 		D.dprint_method_end();
 		return strColored;
 	}

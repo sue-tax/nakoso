@@ -254,7 +254,7 @@ public class Controller {
 		textNewFile.setEditable(false);
 
 		String strHtml = strText.replaceAll("\\n", "<br>");
-		D.dprint(strHtml);
+//		D.dprint(strHtml);
 		String strColored = Main.configProc.getColoredString(
 				strHtml);
     	webviewText.getEngine().loadContent(strColored);

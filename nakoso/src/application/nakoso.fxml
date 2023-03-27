@@ -114,24 +114,24 @@
         </AnchorPane>
       <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="442.0">
         <children>
-                  <Button fx:id="buttonConfigOpen" layoutX="364.0" layoutY="506.0" mnemonicParsing="false" onAction="#onConfigOpenAction" text="開く" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
-                  <Label layoutX="14.0" layoutY="519.0" text="設定ファイル名" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
+                  <Button fx:id="buttonConfigOpen" layoutX="364.0" layoutY="506.0" mnemonicParsing="false" onAction="#onConfigOpenAction" text="開く" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <Label layoutX="14.0" layoutY="519.0" text="設定ファイル名" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="textConfig" editable="false" layoutX="105.0" layoutY="519.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="50.0" />
+                  <TextField fx:id="textConfig" editable="false" layoutX="105.0" layoutY="519.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />
                   <Label fx:id="labelPdfFile" layoutX="12.0" layoutY="40.0" prefHeight="17.0" prefWidth="114.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="143.0" AnchorPane.topAnchor="40.0">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label layoutX="18.0" layoutY="6.0" text="ファイル名フォーマット" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
+                  <Label layoutX="18.0" layoutY="6.0" text="ファイル名フォーマット" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="textFileFormat" editable="false" layoutX="130.0" layoutY="3.0" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <TextField fx:id="textFileFormat" editable="false" layoutX="130.0" layoutY="3.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="5.0" />
         </children>
       </AnchorPane>
         <AnchorPane>
