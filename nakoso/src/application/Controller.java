@@ -235,7 +235,8 @@ public class Controller {
     		return;
     	}
     	String strText = Main.fileProc.getText();
-		String aStr[] = Main.configProc.getMatchString(
+//    	D.dprint(strText);
+    	String aStr[] = Main.configProc.getMatchString(
 				1, strText, Main.fileProc);
 		if (aStr[0] != null) {
 			printMsg(aStr[0]);
