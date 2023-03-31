@@ -10,6 +10,8 @@ PDFファイル内の文字列などに応じて、ファイル名を変更し�
 
 ## operation
 
+`nakoso.jar`をダブルクリックするなどして起動します。
+
 「設定ファイル」を「開く」ボタンをクリックして選択します。
 
 「PDFファイル」を「開く」ボタンをクリックして選択するか、「ＰＤＦテキストエリア」にファイルをドラッグします。
@@ -18,9 +20,27 @@ PDFファイル内の文字列などに応じて、ファイル名を変更し�
 
 ## install
 
-必要なファイル
+### 環境設定
+
+javaの実行環境が必要です。
+
+https://www.oracle.com/jp/java/technologies/downloads/
+
+javaFXのライブラリが必要です。
+
+https://gluonhq.com/products/javafx/
+
+Windows 19 x64 SDK をダウンロードし、解凍します。
+
+追記 「環境変数の設定」により、システム環境変数の「Path」に、ダウンロードしたjavaFXのbinディレクトリを追加します。
+
+例：「c:\javafx-sdk-19\bin」
+
+### 必要なファイル
 
 nakoso.jar
+
+nakoso.fxml　nakoso.jarと同じフォルダに入れます
 
 config.csv  設定ファイルのサンプルです
 
