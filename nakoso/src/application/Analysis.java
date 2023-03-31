@@ -49,9 +49,11 @@ public class Analysis {
 			if (m.find()) {
 				D.dprint(m.group(0));
 				int i = m.groupCount();
+				D.dprint(i);
 				if (i == 0) {
 					strExch = this.strName;
 				} else if (i == 1) {
+					D.dprint(m.group(1));
 					strExch = String.format(this.strName,
 							m.group(1));
 				} else if (i == 2) {

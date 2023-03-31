@@ -16,6 +16,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
@@ -91,6 +94,46 @@ public class Controller {
     @FXML
     void onRenameFileAction(ActionEvent event) {
     	renameFile();
+    }
+
+    @FXML
+    void onDragDropped(DragEvent event) {
+        Dragboard board = event.getDragboard();
+        if (board.hasFiles()) {
+            board.getFiles().forEach(file -> {
+//                root.getChildren().add(new Label(file.getAbsolutePath()));
+                System.out.println(file.getAbsolutePath());
+            });
+            File file = board.getFiles().get(0);
+            String strFile = file.getAbsolutePath();
+    		FileProc fileProc = new FileProc(strFile);
+    		String strRet = fileProc.readFile();
+    		if (strRet != null) {
+    			printMsg(strRet);
+    			D.dprint_method_end();
+    			return;
+    		}
+    		textPDFFile.setEditable(true);
+    		textPDFFile.setText(strFile);
+    		textPDFFile.end();
+    		textPDFFile.setEditable(false);
+
+            Controller.strFilePDF = strFile;
+            Main.fileProc = fileProc;
+            analyzeText();
+
+            event.setDropCompleted(true);
+        } else {
+            event.setDropCompleted(false);
+        }
+    }
+
+    @FXML
+    void onDragOver(DragEvent event) {
+        Dragboard board = event.getDragboard();
+        if (board.hasFiles()) {
+            event.acceptTransferModes(TransferMode.MOVE);
+        }
     }
 
 
@@ -254,10 +297,12 @@ public class Controller {
 		textNewFile.end();
 		textNewFile.setEditable(false);
 
-		String strHtml = strText.replaceAll("\\n", "<br>");
+//		String strHtml = strText.replaceAll("\\n", "(\\\\n)<br>");
+//		String strHtml = strText.replaceAll("\\n", "<br>");
 //		D.dprint(strHtml);
-		String strColored = Main.configProc.getColoredString(
-				strHtml);
+		String strHtml = Main.configProc.getColoredString(
+				strText);
+		String strColored = strHtml.replaceAll("\\n", "(\\\\n)<br>");
     	webviewText.getEngine().loadContent(strColored);
 //		textPDF.setEditable(true);
 //		textPDF.setText(strColored);
@@ -279,6 +324,7 @@ public class Controller {
 				textPDFFile.setText(strFileName);
 				textPDFFile.end();
 				textPDFFile.setEditable(false);
+				printMsg("ファイル名を変更しました");
 			} else {
 				printMsg("ファイル名変更に失敗しました");
 			}

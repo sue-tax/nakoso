@@ -532,7 +532,8 @@ public class ConfigProc {
 					i, strColoredText);
 		}
 		strColoredText = strColoredText.replaceAll(
-				"(?<!font)\\s", "(\\\\s)");
+				"(?<!font)\\h", "(\\\\h)");
+//		"(?<!font)\\s", "(\\\\s)");
 		D.dprint(strColoredText);
 		D.dprint_method_end();
 		return strColoredText;

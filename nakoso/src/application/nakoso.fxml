@@ -103,7 +103,7 @@
                   <Button fx:id="buttonPDFOpen" layoutX="196.0" layoutY="10.0" mnemonicParsing="false" onAction="#onPDFOpenAction" text="開く" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
                   <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="16.0" layoutY="50.0" prefHeight="488.0" prefWidth="207.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="40.0">
                      <content>
-                        <WebView fx:id="webviewText" prefHeight="200.0" prefWidth="200.0" />
+                        <WebView fx:id="webviewText" onDragDropped="#onDragDropped" onDragOver="#onDragOver" prefHeight="200.0" prefWidth="200.0" />
                      </content>
                   </ScrollPane>
                   <TextField fx:id="textPDFFile" editable="false" layoutX="95.0" layoutY="2.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />

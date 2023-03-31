@@ -70,6 +70,7 @@ public class FileProc {
 			return strRet;
 		}
 
+		text = text.replaceAll("\r\n", "\n");
         // 参考 https://www.informe.co.jp/useful/character/character27/
 //        もっとも一般的といえる半角（欧文）スペースは、ASCIIコードで20、ユニコードではU+0020という
 //        コードポイントが与えられています。
