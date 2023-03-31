@@ -193,11 +193,13 @@ public class FileProc {
 
         D.dprint(strFile);
         File fNew = new File(strFile);
+//        D.dprint(fNew);
         boolean flag = true;
 		try {
 			flag = fOld.renameTo(fNew);
 			this.strFileName = strFile;
 		} catch (Exception e) {
+//			D.dprint(e.toString());
 			flag = false;
 		}
         D.dprint(flag);
