@@ -14,7 +14,8 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -45,8 +46,11 @@ public class Controller {
     @FXML
     private Button buttonRename;
 
-    @FXML
-    private Label labelPdfFile;
+    @FXML // fx:id="cbAuto"
+    private CheckBox cbAuto; // Value injected by FXMLLoader
+
+    @FXML // fx:id="choiceOption"
+    private ChoiceBox<String> choiceOption; // Value injected by FXMLLoader
 
     @FXML
     private TextField textConfig;
@@ -59,6 +63,9 @@ public class Controller {
 
     @FXML
     private TextField textFileFormat;
+
+    @FXML // fx:id="textVersion"
+    private TextField textVersion; // Value injected by FXMLLoader
 
 //    @FXML
 //    private TextArea textPDF;
@@ -106,22 +113,7 @@ public class Controller {
             });
             File file = board.getFiles().get(0);
             String strFile = file.getAbsolutePath();
-    		FileProc fileProc = new FileProc(strFile);
-    		String strRet = fileProc.readFile();
-    		if (strRet != null) {
-    			printMsg(strRet);
-    			D.dprint_method_end();
-    			return;
-    		}
-    		textPDFFile.setEditable(true);
-    		textPDFFile.setText(strFile);
-    		textPDFFile.end();
-    		textPDFFile.setEditable(false);
-
-            Controller.strFilePDF = strFile;
-            Main.fileProc = fileProc;
-            analyzeText();
-
+            openPDFmain(strFile);
             event.setDropCompleted(true);
         } else {
             event.setDropCompleted(false);
@@ -160,7 +152,16 @@ public class Controller {
 			return;
 		}
 	    String strFile = file.getAbsolutePath();
-		FileProc fileProc = new FileProc(strFile);
+	    openPDFmain(strFile);
+		D.dprint_method_end();
+		return;
+    }
+
+
+    void openPDFmain( String strFileName ) {
+    	D.dprint_method_start();
+    	D.dprint(strFileName);
+		FileProc fileProc = new FileProc(strFileName);
 		String strRet = fileProc.readFile();
 		if (strRet != null) {
 			printMsg(strRet);
@@ -168,21 +169,17 @@ public class Controller {
 			return;
 		}
 		textPDFFile.setEditable(true);
-		textPDFFile.setText(strFile);
+		textPDFFile.setText(strFileName);
 		textPDFFile.end();
 		textPDFFile.setEditable(false);
 
-        Controller.strFilePDF = strFile;
-//		String strText = fileProc.getText();
-
-//		textPDF.setEditable(true);
-//        textPDF.setText(strText);
-//        textPDF.end();
-//        textPDF.setEditable(false);
+        Controller.strFilePDF = strFileName;
         Main.fileProc = fileProc;
+		printMsg("PDFファイルを開きました。");
         analyzeText();
 		D.dprint_method_end();
 		return;
+
     }
 
 
@@ -202,6 +199,10 @@ public class Controller {
 		} catch (Exception e1) {
 			printMsg("ファイルの選択ができませんでした。");
 			Main.configProc = null;
+			textVersion.setEditable(true);
+			textVersion.setText("");
+			textVersion.end();
+			textVersion.setEditable(false);
 			textConfig.setEditable(true);
 			textConfig.setText("");
 			textConfig.end();
@@ -212,6 +213,10 @@ public class Controller {
 	    if (file == null) {
 			printMsg("ファイルが選択されませんでした。");
 			Main.configProc = null;
+			textVersion.setEditable(true);
+			textVersion.setText("");
+			textVersion.end();
+			textVersion.setEditable(false);
 			textConfig.setEditable(true);
 			textConfig.setText("");
 			textConfig.end();
@@ -227,6 +232,10 @@ public class Controller {
 		if (strRet != null) {
 			printMsg(strRet);
 			Main.configProc = null;
+			textVersion.setEditable(true);
+			textVersion.setText("");
+			textVersion.end();
+			textVersion.setEditable(false);
 			textConfig.setEditable(true);
 			textConfig.setText("");
 			textConfig.end();
@@ -239,9 +248,11 @@ public class Controller {
 			printMsg(String.format(
 					"設定ファイルのバージョン%.2fが低い",
 					configVersion));
-//			System.out.println(
-//					"設定ファイルの内容を確認してください");
 			Main.configProc = null;
+			textVersion.setEditable(true);
+			textVersion.setText("");
+			textVersion.end();
+			textVersion.setEditable(false);
 			textConfig.setEditable(true);
 			textConfig.setText("");
 			textConfig.end();
@@ -249,6 +260,20 @@ public class Controller {
 			D.dprint_method_end();
 			return;
 		}
+		textVersion.setEditable(true);
+		String str = String.format("%.2f", configVersion);
+		textVersion.setText(str);
+		textVersion.end();
+		textVersion.setEditable(false);
+
+		boolean flagRename = configProc.getFlagRename();
+//		choiceOption.setEditable(true);
+		if (flagRename) {
+			choiceOption.getSelectionModel().select(0);
+		} else {
+			choiceOption.getSelectionModel().select(1);
+		}
+
 		Main.configProc = configProc;
 		textConfig.setEditable(true);
 		textConfig.setText(Controller.strFileConfig);
@@ -308,6 +333,7 @@ public class Controller {
 //		textPDF.setText(strColored);
 //		textPDF.end();
 //		textPDF.setEditable(false);
+    	printMsg("変更ファイル名を生成しました。");
 		D.dprint_method_end();
 		return;
 	}
@@ -353,17 +379,20 @@ public class Controller {
         assert buttonConfigOpen != null : "fx:id=\"buttonConfigOpen\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert buttonPDFOpen != null : "fx:id=\"buttonPDFOpen\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert buttonRename != null : "fx:id=\"buttonRename\" was not injected: check your FXML file 'nakoso.fxml'.";
-        assert labelPdfFile != null : "fx:id=\"labelPdfFile\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert cbAuto != null : "fx:id=\"cbAuto\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert choiceOption != null : "fx:id=\"choiceOption\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textConfig != null : "fx:id=\"textConfig\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert textFileFormat != null : "fx:id=\"textFileFormat\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textMsg != null : "fx:id=\"textMsg\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textNewFile != null : "fx:id=\"textNewFile\" was not injected: check your FXML file 'nakoso.fxml'.";
-        assert textFileFormat != null : "fx:id=\"textFileFormat\" was not injected: check your FXML file 'nakoso.fxml'.";
-//        assert textPDF != null : "fx:id=\"textPDF\" was not injected: check your FXML file 'nakoso.fxml'.";
-        assert webviewText != null : "fx:id=\"webviewText\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textPDFFile != null : "fx:id=\"textPDFFile\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert textVersion != null : "fx:id=\"textVersion\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert webviewText != null : "fx:id=\"webviewText\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert x1 != null : "fx:id=\"x1\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert x3 != null : "fx:id=\"x3\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert x4 != null : "fx:id=\"x4\" was not injected: check your FXML file 'nakoso.fxml'.";
+
+        choiceOption.getItems().addAll("変更","ｺﾋﾟｰ");
 
     }
 
