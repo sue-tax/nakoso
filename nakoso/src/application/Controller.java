@@ -267,7 +267,7 @@ public class Controller {
 		textVersion.setEditable(false);
 
 		boolean flagRename = configProc.getFlagRename();
-//		choiceOption.setEditable(true);
+//		choiceOption.getItems().setEditable(true);
 		if (flagRename) {
 			choiceOption.getSelectionModel().select(0);
 		} else {
