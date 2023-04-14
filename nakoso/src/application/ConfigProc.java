@@ -23,6 +23,7 @@ import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -537,6 +538,13 @@ public class ConfigProc {
 		D.dprint(strColoredText);
 		D.dprint_method_end();
 		return strColoredText;
+	}
+
+
+	public List<MatchTable> getMatchTableList() {
+		List<MatchTable> listMatchTable
+				= new ArrayList<MatchTable>();
+		return listMatchTable;
 	}
 
 }

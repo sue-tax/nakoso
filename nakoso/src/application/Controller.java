@@ -11,11 +11,15 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -30,6 +34,7 @@ public class Controller {
 	static String strFileConfig = null;
 	static String strFilePDF = null;
 
+	static int indexFile = 1;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -51,6 +56,33 @@ public class Controller {
 
     @FXML // fx:id="choiceOption"
     private ChoiceBox<String> choiceOption; // Value injected by FXMLLoader
+
+    @FXML
+    private TableColumn<MatchTable, String> colExchg;
+
+    @FXML
+    private TableColumn<MatchTable, String> colFormat;
+
+    @FXML
+    private TableColumn<MatchTable, String> colKind;
+
+    @FXML
+    private TableColumn<MatchTable, String> colMatch;
+
+    @FXML
+    private TableColumn<MatchTable, String> colName;
+
+//    @FXML
+//    private TableColumn<MatchTable, Integer> colNo;
+    @FXML
+    private TableColumn<MatchTable, String> colNo;
+
+    @FXML
+    private TableColumn<MatchTable, String> colPattern;
+
+    @FXML
+    private TableView<MatchTable> tableMatch;
+
 
     @FXML
     private TextField textConfig;
@@ -107,13 +139,21 @@ public class Controller {
     void onDragDropped(DragEvent event) {
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
-            board.getFiles().forEach(file -> {
-//                root.getChildren().add(new Label(file.getAbsolutePath()));
-                System.out.println(file.getAbsolutePath());
-            });
-            File file = board.getFiles().get(0);
-            String strFile = file.getAbsolutePath();
-            openPDFmain(strFile);
+            if (cbAuto.isSelected()) {
+	        	indexFile = 1;
+            	board.getFiles().forEach(file -> {
+	//                root.getChildren().add(new Label(file.getAbsolutePath()));
+	                System.out.println(file.getAbsolutePath());
+	                String strFile = file.getAbsolutePath();
+	                openPDFmain(strFile);
+	                indexFile += 1;		// TODO テストしていない
+            	});
+            } else {
+	        	File file = board.getFiles().get(0);
+	            String strFile = file.getAbsolutePath();
+	            indexFile = 1;
+	            openPDFmain(strFile);
+            }
             event.setDropCompleted(true);
         } else {
             event.setDropCompleted(false);
@@ -287,6 +327,11 @@ public class Controller {
 
 		printMsg("設定ファイルを読込みました");
 		analyzeText();
+
+	    MatchTable newData = new MatchTable(1, "書類", "-",
+	    		"%1$s", "test" );
+	    listMatch.add(newData);
+
 		D.dprint_method_end();
     	return;
     }
@@ -305,7 +350,7 @@ public class Controller {
     	String strText = Main.fileProc.getText();
 //    	D.dprint(strText);
     	String aStr[] = Main.configProc.getMatchString(
-				1, strText, Main.fileProc);
+				indexFile, strText, Main.fileProc);
 		if (aStr[0] != null) {
 			printMsg(aStr[0]);
 			D.dprint_method_end();
@@ -334,6 +379,9 @@ public class Controller {
 //		textPDF.end();
 //		textPDF.setEditable(false);
     	printMsg("変更ファイル名を生成しました。");
+    	if (cbAuto.isSelected()) {
+    		renameFile();
+    	}
 		D.dprint_method_end();
 		return;
 	}
@@ -374,6 +422,57 @@ public class Controller {
 		return;
     }
 
+    private ObservableList<MatchTable> listMatch;
+//    		= FXCollections.observableArrayList(new MatchTable(1, "書類", "-",
+//    	    		"%1$s", "test" ));
+
+    private void setTableItems() {
+        D.dprint_method_start();
+//    	listMatch
+//				= FXCollections.observableArrayList(
+//				new MatchTable(1, "書類", "-",
+//	    		"%1$s", "test" ));
+    	listMatch
+				= FXCollections.observableArrayList();
+    	D.dprint(listMatch);
+//	    MatchTable newData = new MatchTable(1, "書類", "-",
+//	    		"%1$s", "test" );
+//    	listMatch.add(newData);
+    	tableMatch.setItems(listMatch);
+
+//    	//Entityのリストを取得
+//	    List<MatchTable> itemList = new ArrayList<MatchTable>();
+//	    MatchTable newData = new MatchTable(1, "書類", "-",
+//	    		"%1$s", "test" );
+//	    itemList.add(newData);
+//
+//	    //TableViewが扱えるリストに変換して設定
+//	    ObservableList<MatchTable> tableRecord
+//	    		= FXCollections.observableArrayList();
+//	    itemList.forEach(tableRecord::add);
+//	    tableMatch.setItems(tableRecord);
+//
+	    //TableのColumnとEntityのフィールドのマッピングを指定
+//	    colName.setCellValueFactory(
+//	    		new PropertyValueFactory<MatchTable, String>
+//	    		("strName"));
+	    colNo.setCellValueFactory(
+	    		p -> p.getValue().strNoProperty());
+	    colName.setCellValueFactory(
+	    		p -> p.getValue().strNameProperty());
+	    colKind.setCellValueFactory(
+	    		p -> p.getValue().strKindProperty());
+	    colFormat.setCellValueFactory(
+	    		p -> p.getValue().strFormatProperty());
+	    colPattern.setCellValueFactory(
+	    		p -> p.getValue().strPatternProperty());
+	    colExchg.setCellValueFactory(
+	    		p -> p.getValue().strExchgProperty());
+	    colMatch.setCellValueFactory(
+	    		p -> p.getValue().strMatchProperty());
+    }
+
+
     @FXML
     void initialize() {
         assert buttonConfigOpen != null : "fx:id=\"buttonConfigOpen\" was not injected: check your FXML file 'nakoso.fxml'.";
@@ -381,6 +480,14 @@ public class Controller {
         assert buttonRename != null : "fx:id=\"buttonRename\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert cbAuto != null : "fx:id=\"cbAuto\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert choiceOption != null : "fx:id=\"choiceOption\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colExchg != null : "fx:id=\"colExchg\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colFormat != null : "fx:id=\"colFormat\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colKind != null : "fx:id=\"colKind\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colMatch != null : "fx:id=\"colMatch\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colName != null : "fx:id=\"colName\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colNo != null : "fx:id=\"colNo\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colPattern != null : "fx:id=\"colPattern\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert tableMatch != null : "fx:id=\"tableMatch\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textConfig != null : "fx:id=\"textConfig\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textFileFormat != null : "fx:id=\"textFileFormat\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textMsg != null : "fx:id=\"textMsg\" was not injected: check your FXML file 'nakoso.fxml'.";
@@ -393,7 +500,7 @@ public class Controller {
         assert x4 != null : "fx:id=\"x4\" was not injected: check your FXML file 'nakoso.fxml'.";
 
         choiceOption.getItems().addAll("変更","ｺﾋﾟｰ");
-
+        setTableItems();
     }
 
 }
