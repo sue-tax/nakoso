@@ -18,22 +18,26 @@ import java.util.regex.Pattern;
 public class Analysis {
 
 	class Item {
-		private String strRegex;	// (高|髙)橋\s*直美
-		private String strName;		// %1$s橋直美
+		private String strName;
+		private String strPattern;	// (高|髙)橋\s*直美
+		private String strFormat;		// %1$s橋直美
 		private Pattern pattern;
 		private String strExch;
+		private String strMatch;
 		private int start;
 		private int end;
 
-		public Item( String strRegex, String strName ) {
-			this.strRegex = strRegex;
+		public Item( String strName,
+				String strPattern, String strFormat ) {
 			this.strName = strName;
+			this.strPattern = strPattern;
+			this.strFormat = strFormat;
 			this.pattern = null;
 		}
 
 		public boolean compile() {
 			try {
-				this.pattern = Pattern.compile(strRegex);
+				this.pattern = Pattern.compile(strPattern);
 			} catch (Exception e) {
 				return false;
 			}
@@ -42,8 +46,8 @@ public class Analysis {
 
 		public int match( String text ) {
 			D.dprint_method_start();
-			D.dprint(this.strRegex);
-			D.dprint(this.strName);
+			D.dprint(this.strPattern);
+			D.dprint(this.strFormat);
 			start = Integer.MAX_VALUE;
 			Matcher m = this.pattern.matcher(text);
 			if (m.find()) {
@@ -51,21 +55,22 @@ public class Analysis {
 				int i = m.groupCount();
 				D.dprint(i);
 				if (i == 0) {
-					strExch = this.strName;
+					strExch = this.strFormat;
 				} else if (i == 1) {
 					D.dprint(m.group(1));
-					strExch = String.format(this.strName,
+					strExch = String.format(this.strFormat,
 							m.group(1));
 				} else if (i == 2) {
-					strExch = String.format(this.strName,
+					strExch = String.format(this.strFormat,
 							m.group(1), m.group(2));
 				} else if (i == 3) {
-					strExch = String.format(this.strName,
+					strExch = String.format(this.strFormat,
 							m.group(1), m.group(2),
 							m.group(3));
 				} else {
-					strExch = this.strName;
+					strExch = this.strFormat;
 				}
+				strMatch = m.group(0);
 				start = m.start();
 				end = m.end();
 			} else {
@@ -81,24 +86,39 @@ public class Analysis {
 			return strExch;
 		}
 
+		public MatchTable getMatchTable( int no ) {
+			D.dprint_method_start();
+			MatchTable matchTable = new MatchTable(
+					no, strName, "-",
+					strFormat, strPattern);
+			matchTable.set(strExch, strMatch);
+			D.dprint(matchTable);
+			D.dprint_method_end();
+			return matchTable;
+		}
 	}
 
 	private Map<Integer, List<Item>> mapAnal;
+
+	// マッチしたItem
+	private Map<Integer, Item> mapMatch;
 
 	private Set<Integer> setAnal;
 
 	public Analysis() {
 		mapAnal = new HashMap<Integer, List<Item>>();
+		mapMatch = new HashMap<Integer, Item>();
 		setAnal = new HashSet<Integer>();
 	}
 
 	public boolean addMapElement( Integer intMap,
-			String strRegex, String strName ) {
+			String strName,
+			String strPattern, String strFormat ) {
 		D.dprint_method_start();
 		D.dprint(intMap);
-		D.dprint(strRegex);
-		D.dprint(strName);
-		Item item = new Item(strRegex, strName);
+		D.dprint(strPattern);
+		D.dprint(strFormat);
+		Item item = new Item(strName, strPattern, strFormat);
 		boolean bSuccess = item.compile();
 		if( ! bSuccess ) {
 			D.dprint(false);
@@ -109,6 +129,7 @@ public class Analysis {
 			List<Item>itemList = new ArrayList<Item>();
 			itemList.add(item);
 			mapAnal.put(intMap, itemList);
+			mapMatch.put(intMap, null);
 			setAnal.add(intMap);
 		} else {
 			List<Item>itemList = mapAnal.get(intMap);
@@ -120,9 +141,27 @@ public class Analysis {
 		return true;
 	}
 
+	public MatchTable getMatchTable( Integer intMap ) {
+		D.dprint_method_start();
+		if (! setAnal.contains(intMap)) {
+			D.dprint_method_end();
+			return null;
+		}
+		Item item = mapMatch.get(intMap);
+		if (item == null) {
+			D.dprint(intMap);
+			D.dprint_method_end();
+			return null;
+		}
+		MatchTable matchTable = item.getMatchTable(intMap);
+		D.dprint_method_end();
+		return matchTable;
+	}
+
+
 	public Map<Integer, String> getStringList( String text ) {
 		D.dprint_method_start();
-		D.dprint(text);
+//		D.dprint(text);
 		Map<Integer, String> map = new HashMap<>();
 		mapAnal.forEach((k, itemList) -> {
 			D.dprint(k);
@@ -144,6 +183,7 @@ public class Analysis {
 				// 合致した中で、前にあるものを採用
 				String strMatch = minItem.getExch();
 		    	map.put(k, strMatch);
+		    	mapMatch.put(k, minItem);
 		    }
 		});
 		D.dprint_method_end();
@@ -194,6 +234,9 @@ public class Analysis {
 		return strColored;
 	}
 
+	public boolean contains( int indexMap ) {
+		return setAnal.contains(indexMap);
+	}
 
 
 //	public String getColoredString( String text ) {

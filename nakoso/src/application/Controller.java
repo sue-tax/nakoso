@@ -9,6 +9,7 @@ package application;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
@@ -266,8 +267,10 @@ public class Controller {
 		}
 	    Controller.strFileConfig = file.getAbsolutePath();
 		Analysis analysis = new Analysis();
+		ExAnal exAnal = new ExAnal();
 		ConfigProc configProc = new ConfigProc(
-				Controller.strFileConfig, analysis);
+				Controller.strFileConfig,
+				analysis, exAnal);
 		String strRet = configProc.readConfig();
 		if (strRet != null) {
 			printMsg(strRet);
@@ -328,9 +331,9 @@ public class Controller {
 		printMsg("設定ファイルを読込みました");
 		analyzeText();
 
-	    MatchTable newData = new MatchTable(1, "書類", "-",
-	    		"%1$s", "test" );
-	    listMatch.add(newData);
+//	    MatchTable newData = new MatchTable(1, "書類", "-",
+//	    		"%1$s", "test" );
+//	    listMatch.add(newData);
 
 		D.dprint_method_end();
     	return;
@@ -378,6 +381,14 @@ public class Controller {
 //		textPDF.setText(strColored);
 //		textPDF.end();
 //		textPDF.setEditable(false);
+
+    	// MatchTableの表示
+    	List<MatchTable> listMatchTable
+    			= Main.configProc.getMatchTableList();
+    	D.dprint(listMatchTable);
+    	listMatch.clear();
+    	listMatch.addAll(listMatchTable);
+
     	printMsg("変更ファイル名を生成しました。");
     	if (cbAuto.isSelected()) {
     		renameFile();

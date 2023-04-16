@@ -18,13 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -48,6 +42,8 @@ public class ConfigProc {
 	static final String ERROR_TOOFEW_COLUMN
 			= "TooFewColumn_Line-%d_not_less_than_%d_"
 			+ "その行の項目数が少ない";
+	static final String ERROR_MIX_MATCH_KIND
+			= "MixMatchKind_マッチ種別が混じっています";
 
 	private float version = 0.0f;
 
@@ -71,6 +67,22 @@ public class ConfigProc {
 
 	private Analysis analysis;
 
+	private ExAnal exAnal;
+
+//	class ExMatch {
+//		private String strName;	// マッチ名称
+//		private String strKind;	// 種別　f,d,m,c,a,p,#
+//		private String strFormat;	// 変換フォーマット
+//		private String strPattern;	// マッチパターン
+//		private String strExchg;	// 変換文字列
+//		private String strMatch;	// マッチ文字列
+//
+//
+//	}
+//
+//	private ExMatch aExMatch[];
+
+	// 上記のExMatchを使い、下記は廃止する
 	private int indexDatetime = 0;
 	private String strDatetime;
 	private String strDatetimeFormat;
@@ -89,13 +101,18 @@ public class ConfigProc {
 	private int startNumbering;
 
 
-	public ConfigProc( String strFileConfig, Analysis analysis ) {
+	public ConfigProc( String strFileConfig,
+			Analysis analysis, ExAnal exAnal ) {
 		this.strFileConfig = strFileConfig;
 		this.analysis = analysis;
+		this.exAnal = exAnal;
 	}
 
 	public String readConfig() {
 		D.dprint_method_start();
+
+//		aExMatch = new ExMatch[10];
+
 		String strRet = null;
 		Path path;
 		try {
@@ -218,6 +235,7 @@ public class ConfigProc {
 		if (aData.length < 4) {
 			strRet = String.format(ERROR_TOOFEW_COLUMN,
 					iLine, 4);
+			D.dprint_method_end();
 			return strRet;
 		}
 		Integer index = Integer.valueOf(aData[0]);
@@ -225,11 +243,16 @@ public class ConfigProc {
     	// aData[1]は、処理に関係ない
     	D.dprint("*"+aData[3]+"*");
 		if (! aData[3].equals("")) {	// PROTOTYPEと違う
+			if (exAnal.contains(index)) {
+				strRet = ERROR_MIX_MATCH_KIND;
+				D.dprint_method_end();
+				return strRet;
+			}
 			if (aData[3].equals("+")) {
 				// マッチパターンは
 				// 変換文字列フォーマットと一致
         		analysis.addMapElement(index,
-        				aData[2], aData[2]);
+        				aData[1], aData[2], aData[2]);
 			} else if (aData[3].equals("*")) {
 				// マッチパターンは
 				// 変換文字列フォーマットの
@@ -242,35 +265,46 @@ public class ConfigProc {
 				String strMatch = stringBuilder.toString();
 				D.dprint(strMatch);
         		analysis.addMapElement(index,
-        				strMatch, aData[2]);
+        				aData[1], strMatch, aData[2]);
 			} else {
         		analysis.addMapElement(index,
-        				aData[3], aData[2]);
+        				aData[1], aData[3], aData[2]);
 			}
 		} else {
+			if (analysis.contains(index)) {
+				strRet = ERROR_MIX_MATCH_KIND;
+				D.dprint_method_end();
+				return strRet;
+			}
 			// 日時、連番、元ファイルの処理
 			if (aData[2].matches("(m|c|a|p)")) {
 				// ファイル更新日時等
-				indexDatetime = index;
-				strDatetime = aData[2];
-//				patternFile = Pattern.compile(aData[4]);
-				strDatetimeFormat = aData[4];
+				exAnal.addMapElement(index,
+						aData[1], aData[2], "", aData[4]);
+//				indexDatetime = index;
+//				strDatetime = aData[2];
+////				patternFile = Pattern.compile(aData[4]);
+//				strDatetimeFormat = aData[4];
 			} else if (aData[2].equals("f")) {
-				D.dprint("f");
-				D.dprint(index);
-				indexFileName = index;
-//				strFileMatchPattern = aData[4];
-				D.dprint(aData[4]);
-				patternFile = Pattern.compile(aData[4]);
-				strFileExchFormat = aData[5];
-				D.dprint(aData[5]);
+				exAnal.addMapElement(index,
+						aData[1], aData[2],
+						aData[4], aData[5]);
+//				indexFileName = index;
+////				strFileMatchPattern = aData[4];
+//				D.dprint(aData[4]);
+//				patternFile = Pattern.compile(aData[4]);
+//				strFileExchFormat = aData[5];
+//				D.dprint(aData[5]);
 			} else if (aData[2].equals("d")) {
-				indexDirName = index;
-//				strDirMatchPattern = aData[4];
-				patternDir = Pattern.compile(aData[4]);
-				strDirExchFormat = aData[5];
+				exAnal.addMapElement(index,
+						aData[1], aData[2],
+						aData[4], aData[5]);
+//				indexDirName = index;
+////				strDirMatchPattern = aData[4];
+//				patternDir = Pattern.compile(aData[4]);
+//				strDirExchFormat = aData[5];
 			} else if (aData[2].equals("#")) {
-				indexNumbering = index;
+//				indexNumbering = index;
 				if (aData.length >= 5) {
 					try {
 						startNumbering = Integer.valueOf(
@@ -287,6 +321,8 @@ public class ConfigProc {
 				} else {
 					startNumbering = 1;
 				}
+				exAnal.addMapElement(index,
+						"", "", "", "");
 			} else {
 	    		strRet = String.format(
 	    				"InvalidMatch_Line-%d_%s_"
@@ -378,145 +414,151 @@ public class ConfigProc {
 		File file = new File(strFileOrginal);
 		Map<Integer, String> map = analysis.getStringList(
 				strText);
+		Map<Integer, String> exMap = exAnal.getStringList(
+				iFile, fileProc);
 		String aStr[] = new String[10];
 		for (int i=1; i<10; i++) {
 			aStr[i] = map.get(i);
-		}
-		if (indexDatetime != 0) {
-			if (strDatetime.equals("m")) {
-				BasicFileAttributes attrs;
-				try {
-					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-				} catch (IOException e) {
-					strRet = String.format(
-							"CannotReadFile_Files.readAttributes_%s"
-							+ "ファイルが読めませんでした",
-							strFileOrginal);
-					D.dprint(strRet);
-					aStr[0] = strRet;
-					D.dprint_method_end();
-					return aStr;
-				}
-			    FileTime time = attrs.lastModifiedTime();
-			    D.dprint(time);
-			    SimpleDateFormat simpleDateFormat;
-				try {
-					simpleDateFormat = new SimpleDateFormat(
-							strDatetimeFormat);
-				} catch (Exception e) {
-					strRet = String.format(
-							"InvalidDatetimeFormat_%s"
-							+ "日時のフォーマットが間違っています",
-							strDatetimeFormat);
-					D.dprint(strRet);
-					aStr[0] = strRet;
-					D.dprint_method_end();
-					return aStr;
-				}
-			    aStr[indexDatetime]
-			    		= simpleDateFormat.format(
-			    				new Date(time.toMillis()));
-			} else if (strDatetime.equals("c")) {
-				BasicFileAttributes attrs;
-				try {
-					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-				} catch (IOException e) {
-					strRet = String.format(
-							"CannotReadFile_Files.readAttributes_%s"
-							+ "ファイルが読めませんでした",
-							strFileOrginal);
-					D.dprint(strRet);
-					aStr[0] = strRet;
-					D.dprint_method_end();
-					return aStr;
-				}
-			    FileTime time = attrs.creationTime();
-			    D.dprint(time);
-			    SimpleDateFormat simpleDateFormat;
-				try {
-					simpleDateFormat = new SimpleDateFormat(
-							strDatetimeFormat);
-				} catch (Exception e) {
-					strRet = String.format(
-							"InvalidDatetimeFormat_%s"
-							+ "日時のフォーマットが間違っています",
-							strDatetimeFormat);
-					D.dprint(strRet);
-					aStr[0] = strRet;
-					D.dprint_method_end();
-					return aStr;
-				}
-			    aStr[indexDatetime]
-			    		= simpleDateFormat.format(
-			    				new Date(time.toMillis()));
-			}  else if (strDatetime.equals("a")) {
-				BasicFileAttributes attrs;
-				try {
-					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-				} catch (IOException e) {
-					strRet = String.format(
-							"CannotReadFile_Files.readAttributes_%s"
-							+ "ファイルが読めませんでした",
-							strFileOrginal);
-					D.dprint(strRet);
-					aStr[0] = strRet;
-					D.dprint_method_end();
-					return aStr;
-				}
-			    FileTime time = attrs.lastAccessTime();
-			    D.dprint(time);
-			    SimpleDateFormat simpleDateFormat;
-				try {
-					simpleDateFormat = new SimpleDateFormat(
-							strDatetimeFormat);
-				} catch (Exception e) {
-					strRet = String.format(
-							"InvalidDatetimeFormat_%s"
-							+ "日時のフォーマットが間違っています",
-							strDatetimeFormat);
-					D.dprint(strRet);
-					aStr[0] = strRet;
-					D.dprint_method_end();
-					return aStr;
-				}
-			    aStr[indexDatetime]
-			    		= simpleDateFormat.format(
-			    				new Date(time.toMillis()));
-			} else if (strDatetime.equals("p")){
-		        LocalDateTime nowDate
-		        		= LocalDateTime.now();
-		        D.dprint(nowDate);
-		        D.dprint(strDatetimeFormat);
-		        DateTimeFormatter dtf1;
-				try {
-					dtf1 = DateTimeFormatter.ofPattern(
-							strDatetimeFormat);
-				} catch (Exception e) {
-					strRet = String.format(
-							"InvalidDatetimeFormat_%s"
-							+ "日時のフォーマットが間違っています",
-							strDatetimeFormat);
-					D.dprint(strRet);
-					aStr[0] = strRet;
-					D.dprint_method_end();
-					return aStr;
-				}
-		        aStr[indexDatetime] = dtf1.format(nowDate);
+			if (aStr[i] == null) {
+				aStr[i] = exMap.get(i);
 			}
 		}
-		if (indexFileName != 0) {
-			aStr[indexFileName] = fileProc
-					.getExchFileName(patternFile,
-					strFileExchFormat);
-		}
-		if (indexDirName != 0) {
-			aStr[indexDirName] = fileProc
-					.getExchDirName(patternDir,
-					strDirExchFormat);
-		}
-		if (indexNumbering != 0) {
-			aStr[indexNumbering] = Integer.toString(iFile);
-		}
+
+//		if (indexDatetime != 0) {
+//			if (strDatetime.equals("m")) {
+//				BasicFileAttributes attrs;
+//				try {
+//					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+//				} catch (IOException e) {
+//					strRet = String.format(
+//							"CannotReadFile_Files.readAttributes_%s"
+//							+ "ファイルが読めませんでした",
+//							strFileOrginal);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    FileTime time = attrs.lastModifiedTime();
+//			    D.dprint(time);
+//			    SimpleDateFormat simpleDateFormat;
+//				try {
+//					simpleDateFormat = new SimpleDateFormat(
+//							strDatetimeFormat);
+//				} catch (Exception e) {
+//					strRet = String.format(
+//							"InvalidDatetimeFormat_%s"
+//							+ "日時のフォーマットが間違っています",
+//							strDatetimeFormat);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    aStr[indexDatetime]
+//			    		= simpleDateFormat.format(
+//			    				new Date(time.toMillis()));
+//			} else if (strDatetime.equals("c")) {
+//				BasicFileAttributes attrs;
+//				try {
+//					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+//				} catch (IOException e) {
+//					strRet = String.format(
+//							"CannotReadFile_Files.readAttributes_%s"
+//							+ "ファイルが読めませんでした",
+//							strFileOrginal);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    FileTime time = attrs.creationTime();
+//			    D.dprint(time);
+//			    SimpleDateFormat simpleDateFormat;
+//				try {
+//					simpleDateFormat = new SimpleDateFormat(
+//							strDatetimeFormat);
+//				} catch (Exception e) {
+//					strRet = String.format(
+//							"InvalidDatetimeFormat_%s"
+//							+ "日時のフォーマットが間違っています",
+//							strDatetimeFormat);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    aStr[indexDatetime]
+//			    		= simpleDateFormat.format(
+//			    				new Date(time.toMillis()));
+//			}  else if (strDatetime.equals("a")) {
+//				BasicFileAttributes attrs;
+//				try {
+//					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+//				} catch (IOException e) {
+//					strRet = String.format(
+//							"CannotReadFile_Files.readAttributes_%s"
+//							+ "ファイルが読めませんでした",
+//							strFileOrginal);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    FileTime time = attrs.lastAccessTime();
+//			    D.dprint(time);
+//			    SimpleDateFormat simpleDateFormat;
+//				try {
+//					simpleDateFormat = new SimpleDateFormat(
+//							strDatetimeFormat);
+//				} catch (Exception e) {
+//					strRet = String.format(
+//							"InvalidDatetimeFormat_%s"
+//							+ "日時のフォーマットが間違っています",
+//							strDatetimeFormat);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    aStr[indexDatetime]
+//			    		= simpleDateFormat.format(
+//			    				new Date(time.toMillis()));
+//			} else if (strDatetime.equals("p")){
+//		        LocalDateTime nowDate
+//		        		= LocalDateTime.now();
+//		        D.dprint(nowDate);
+//		        D.dprint(strDatetimeFormat);
+//		        DateTimeFormatter dtf1;
+//				try {
+//					dtf1 = DateTimeFormatter.ofPattern(
+//							strDatetimeFormat);
+//				} catch (Exception e) {
+//					strRet = String.format(
+//							"InvalidDatetimeFormat_%s"
+//							+ "日時のフォーマットが間違っています",
+//							strDatetimeFormat);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//		        aStr[indexDatetime] = dtf1.format(nowDate);
+//			}
+//		}
+//		if (indexFileName != 0) {
+//			aStr[indexFileName] = fileProc
+//					.getExchFileName(patternFile,
+//					strFileExchFormat);
+//		}
+//		if (indexDirName != 0) {
+//			aStr[indexDirName] = fileProc
+//					.getExchDirName(patternDir,
+//					strDirExchFormat);
+//		}
+//		if (indexNumbering != 0) {
+//			aStr[indexNumbering] = Integer.toString(iFile);
+//		}
 		D.dprint(aStr);
 		D.dprint_method_end();
 		return aStr;
@@ -535,16 +577,190 @@ public class ConfigProc {
 		strColoredText = strColoredText.replaceAll(
 				"(?<!font)\\h", "(\\\\h)");
 //		"(?<!font)\\s", "(\\\\s)");
-		D.dprint(strColoredText);
+//		D.dprint(strColoredText);
 		D.dprint_method_end();
 		return strColoredText;
 	}
 
 
 	public List<MatchTable> getMatchTableList() {
+		D.dprint_method_start();
+		MatchTable aMatchTable[] = new MatchTable[10];
+		for (int i=1; i<10; i++) {
+			if (analysis.contains(i)) {
+				aMatchTable[i] = analysis.getMatchTable(i);
+			} else if (exAnal.contains(i)) {
+				aMatchTable[i] = exAnal.getMatchTable(i);
+			}
+			if (aMatchTable[i] == null) {
+				aMatchTable[i] = new MatchTable(
+						i, "", "",
+						"", "");
+			}
+			D.dprint(aMatchTable[i]);
+		}
+
+//		if (indexDatetime != 0) {
+//			aMatchTable[indexDatetime] = new MatchTable(
+//					indexDatetime,
+//
+
 		List<MatchTable> listMatchTable
-				= new ArrayList<MatchTable>();
+				= Arrays.asList(aMatchTable);
+		listMatchTable = listMatchTable.subList(1, 10);
+		D.dprint(listMatchTable);
+		D.dprint_method_end();
 		return listMatchTable;
 	}
+//
+//
+//
+//		String strRet = null;
+//		String strFileOrginal = fileProc.getFileName();
+//		File file = new File(strFileOrginal);
+//		Map<Integer, String> map = analysis.getStringList(
+//				strText);
+//		String aStr[] = new String[10];
+//		for (int i=1; i<10; i++) {
+//			aStr[i] = map.get(i);
+//		}
+//		if (indexDatetime != 0) {
+//			if (strDatetime.equals("m")) {
+//				BasicFileAttributes attrs;
+//				try {
+//					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+//				} catch (IOException e) {
+//					strRet = String.format(
+//							"CannotReadFile_Files.readAttributes_%s"
+//							+ "ファイルが読めませんでした",
+//							strFileOrginal);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    FileTime time = attrs.lastModifiedTime();
+//			    D.dprint(time);
+//			    SimpleDateFormat simpleDateFormat;
+//				try {
+//					simpleDateFormat = new SimpleDateFormat(
+//							strDatetimeFormat);
+//				} catch (Exception e) {
+//					strRet = String.format(
+//							"InvalidDatetimeFormat_%s"
+//							+ "日時のフォーマットが間違っています",
+//							strDatetimeFormat);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    aStr[indexDatetime]
+//			    		= simpleDateFormat.format(
+//			    				new Date(time.toMillis()));
+//			} else if (strDatetime.equals("c")) {
+//				BasicFileAttributes attrs;
+//				try {
+//					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+//				} catch (IOException e) {
+//					strRet = String.format(
+//							"CannotReadFile_Files.readAttributes_%s"
+//							+ "ファイルが読めませんでした",
+//							strFileOrginal);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    FileTime time = attrs.creationTime();
+//			    D.dprint(time);
+//			    SimpleDateFormat simpleDateFormat;
+//				try {
+//					simpleDateFormat = new SimpleDateFormat(
+//							strDatetimeFormat);
+//				} catch (Exception e) {
+//					strRet = String.format(
+//							"InvalidDatetimeFormat_%s"
+//							+ "日時のフォーマットが間違っています",
+//							strDatetimeFormat);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    aStr[indexDatetime]
+//			    		= simpleDateFormat.format(
+//			    				new Date(time.toMillis()));
+//			}  else if (strDatetime.equals("a")) {
+//				BasicFileAttributes attrs;
+//				try {
+//					attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+//				} catch (IOException e) {
+//					strRet = String.format(
+//							"CannotReadFile_Files.readAttributes_%s"
+//							+ "ファイルが読めませんでした",
+//							strFileOrginal);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    FileTime time = attrs.lastAccessTime();
+//			    D.dprint(time);
+//			    SimpleDateFormat simpleDateFormat;
+//				try {
+//					simpleDateFormat = new SimpleDateFormat(
+//							strDatetimeFormat);
+//				} catch (Exception e) {
+//					strRet = String.format(
+//							"InvalidDatetimeFormat_%s"
+//							+ "日時のフォーマットが間違っています",
+//							strDatetimeFormat);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//			    aStr[indexDatetime]
+//			    		= simpleDateFormat.format(
+//			    				new Date(time.toMillis()));
+//			} else if (strDatetime.equals("p")){
+//		        LocalDateTime nowDate
+//		        		= LocalDateTime.now();
+//		        D.dprint(nowDate);
+//		        D.dprint(strDatetimeFormat);
+//		        DateTimeFormatter dtf1;
+//				try {
+//					dtf1 = DateTimeFormatter.ofPattern(
+//							strDatetimeFormat);
+//				} catch (Exception e) {
+//					strRet = String.format(
+//							"InvalidDatetimeFormat_%s"
+//							+ "日時のフォーマットが間違っています",
+//							strDatetimeFormat);
+//					D.dprint(strRet);
+//					aStr[0] = strRet;
+//					D.dprint_method_end();
+//					return aStr;
+//				}
+//		        aStr[indexDatetime] = dtf1.format(nowDate);
+//			}
+//		}
+//		if (indexFileName != 0) {
+//			aStr[indexFileName] = fileProc
+//					.getExchFileName(patternFile,
+//					strFileExchFormat);
+//		}
+//		if (indexDirName != 0) {
+//			aStr[indexDirName] = fileProc
+//					.getExchDirName(patternDir,
+//					strDirExchFormat);
+//		}
+//		if (indexNumbering != 0) {
+//			aStr[indexNumbering] = Integer.toString(iFile);
+//		}
+//		D.dprint(aStr);
+//		D.dprint_method_end();
+//		return aStr;
 
 }
