@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-	static final float VERSION = 0.10f;
+	static final float VERSION = 0.20f;
 
 	static Stage stage;
 

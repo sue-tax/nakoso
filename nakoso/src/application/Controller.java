@@ -16,9 +16,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -34,6 +37,8 @@ public class Controller {
 
 	static String strFileConfig = null;
 	static String strFilePDF = null;
+
+	private IntegerSpinnerValueFactory valueSpinMatch;
 
 	static int indexFile = 1;
 
@@ -73,8 +78,6 @@ public class Controller {
     @FXML
     private TableColumn<MatchTable, String> colName;
 
-//    @FXML
-//    private TableColumn<MatchTable, Integer> colNo;
     @FXML
     private TableColumn<MatchTable, String> colNo;
 
@@ -83,6 +86,27 @@ public class Controller {
 
     @FXML
     private TableView<MatchTable> tableMatch;
+
+    @FXML
+    private Spinner<Integer> spinMatch;
+
+    @FXML
+    private TableColumn<ItemTable, String> colExchgItem;
+
+    @FXML
+    private TableColumn<ItemTable, String> colFormatItem;
+
+    @FXML
+    private TableColumn<ItemTable, String> colMatchItem;
+
+    @FXML
+    private TableColumn<ItemTable, String> colNameItem;
+
+    @FXML
+    private TableColumn<ItemTable, String> colPatternItem;
+
+    @FXML
+    private TableView<ItemTable> tableItem;
 
 
     @FXML
@@ -331,10 +355,6 @@ public class Controller {
 		printMsg("設定ファイルを読込みました");
 		analyzeText();
 
-//	    MatchTable newData = new MatchTable(1, "書類", "-",
-//	    		"%1$s", "test" );
-//	    listMatch.add(newData);
-
 		D.dprint_method_end();
     	return;
     }
@@ -370,17 +390,10 @@ public class Controller {
 		textNewFile.end();
 		textNewFile.setEditable(false);
 
-//		String strHtml = strText.replaceAll("\\n", "(\\\\n)<br>");
-//		String strHtml = strText.replaceAll("\\n", "<br>");
-//		D.dprint(strHtml);
 		String strHtml = Main.configProc.getColoredString(
 				strText);
 		String strColored = strHtml.replaceAll("\\n", "(\\\\n)<br>");
     	webviewText.getEngine().loadContent(strColored);
-//		textPDF.setEditable(true);
-//		textPDF.setText(strColored);
-//		textPDF.end();
-//		textPDF.setEditable(false);
 
     	// MatchTableの表示
     	List<MatchTable> listMatchTable
@@ -434,39 +447,28 @@ public class Controller {
     }
 
     private ObservableList<MatchTable> listMatch;
-//    		= FXCollections.observableArrayList(new MatchTable(1, "書類", "-",
-//    	    		"%1$s", "test" ));
+
+    private ObservableList<ItemTable> listItem;
+
+    private void setTableItem( Integer intMatch ) {
+    	D.dprint_method_start();
+    	D.dprint(intMatch);
+    	List<ItemTable> listItemTable
+    			= Main.configProc.getItemTableList(intMatch);
+    	D.dprint(listItemTable);
+		listItem.clear();
+		if (listItemTable != null) {
+			listItem.addAll(listItemTable);
+		}
+		D.dprint_method_end();
+    	return;
+    }
 
     private void setTableItems() {
         D.dprint_method_start();
-//    	listMatch
-//				= FXCollections.observableArrayList(
-//				new MatchTable(1, "書類", "-",
-//	    		"%1$s", "test" ));
     	listMatch
 				= FXCollections.observableArrayList();
-    	D.dprint(listMatch);
-//	    MatchTable newData = new MatchTable(1, "書類", "-",
-//	    		"%1$s", "test" );
-//    	listMatch.add(newData);
     	tableMatch.setItems(listMatch);
-
-//    	//Entityのリストを取得
-//	    List<MatchTable> itemList = new ArrayList<MatchTable>();
-//	    MatchTable newData = new MatchTable(1, "書類", "-",
-//	    		"%1$s", "test" );
-//	    itemList.add(newData);
-//
-//	    //TableViewが扱えるリストに変換して設定
-//	    ObservableList<MatchTable> tableRecord
-//	    		= FXCollections.observableArrayList();
-//	    itemList.forEach(tableRecord::add);
-//	    tableMatch.setItems(tableRecord);
-//
-	    //TableのColumnとEntityのフィールドのマッピングを指定
-//	    colName.setCellValueFactory(
-//	    		new PropertyValueFactory<MatchTable, String>
-//	    		("strName"));
 	    colNo.setCellValueFactory(
 	    		p -> p.getValue().strNoProperty());
 	    colName.setCellValueFactory(
@@ -481,6 +483,42 @@ public class Controller {
 	    		p -> p.getValue().strExchgProperty());
 	    colMatch.setCellValueFactory(
 	    		p -> p.getValue().strMatchProperty());
+
+	    listItem
+				= FXCollections.observableArrayList();
+    	tableItem.setItems(listItem);
+	    colNameItem.setCellValueFactory(
+	    		p -> p.getValue().strNameProperty());
+	    colFormatItem.setCellValueFactory(
+	    		p -> p.getValue().strFormatProperty());
+	    colPatternItem.setCellValueFactory(
+	    		p -> p.getValue().strPatternProperty());
+	    colExchgItem.setCellValueFactory(
+	    		p -> p.getValue().strExchgProperty());
+	    colMatchItem.setCellValueFactory(
+	    		p -> p.getValue().strMatchProperty());
+
+	    valueSpinMatch =
+	    		new IntegerSpinnerValueFactory.
+	    		IntegerSpinnerValueFactory(1, 9, 1);
+	    spinMatch.setValueFactory(valueSpinMatch);
+	    spinMatch.getEditor().setAlignment(Pos.CENTER_RIGHT);
+	    spinMatch.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+	    spinMatch.valueProperty().addListener(
+	    		(ov, oldValue, newValue) -> {
+	    			setTableItem(newValue);
+//	    	    	String strSrc = textSrc.getText();
+//	    	    	String[] aSrc = strSrc.split("\n");
+//	    	    	if (newValue < aSrc.length) {
+//		    	    	int index = 0;
+//		    	    	for (int i=0; i<newValue-1; i++) {
+//		    	    		index += aSrc[i].length() + 1;
+//		    	    	}
+//		    	    	textSrc.positionCaret(index);
+//	    	    	}
+	    		});
+
+	    D.dprint_method_end();
     }
 
 
@@ -499,6 +537,13 @@ public class Controller {
         assert colNo != null : "fx:id=\"colNo\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert colPattern != null : "fx:id=\"colPattern\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert tableMatch != null : "fx:id=\"tableMatch\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colExchgItem != null : "fx:id=\"colExchgItem\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colFormatItem != null : "fx:id=\"colFormatItem\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colMatchItem != null : "fx:id=\"colMatchItem\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colNameItem != null : "fx:id=\"colNameItem\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert colPatternItem != null : "fx:id=\"colPatternItem\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert spinMatch != null : "fx:id=\"spinMatch\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert tableItem != null : "fx:id=\"tableItem\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textConfig != null : "fx:id=\"textConfig\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textFileFormat != null : "fx:id=\"textFileFormat\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert textMsg != null : "fx:id=\"textMsg\" was not injected: check your FXML file 'nakoso.fxml'.";

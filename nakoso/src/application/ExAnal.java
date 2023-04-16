@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -75,7 +76,7 @@ public class ExAnal {
 			D.dprint_method_start();
 			String strFileOrginal = fileProc.getFileName();
 			File file = new File(strFileOrginal);
-//			String strExch = null;
+			D.dprint(strKind);
 			if (strKind.equals("m")) {
 				BasicFileAttributes attrs;
 				try {
@@ -189,16 +190,19 @@ public class ExAnal {
 				}
 		        strExch = dtf1.format(nowDate);
 			} else if (strKind.equals("f")) {
-				strExch = fileProc
+				List<String> list = fileProc
 						.getExchFileName(pattern,
 						strFormat);
-				// TODO strMatch
+				strExch = list.get(0);
+				strMatch = list.get(1);
 			} else if (strKind.equals("d")) {
-				strExch = fileProc
+				List<String> list = fileProc
 						.getExchDirName(pattern,
 						strFormat);
-				// TODO strMatch
+				strExch = list.get(0);
+				strMatch = list.get(1);
 			} else if (strKind.equals("#")) {
+				D.dprint(iFile);
 				strExch = Integer.toString(iFile);
 			}
 			D.dprint(strExch);

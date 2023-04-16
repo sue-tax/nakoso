@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,18 +112,20 @@ public class FileProc {
 	}
 
 
-	public String getExchFileName( Pattern patternMatch,
+	public List<String> getExchFileName( Pattern patternMatch,
 			String strExchFormat ) {
 		D.dprint_method_start();
-        File fOld = new File(this.strFileName);
+		D.dprint(patternMatch);
+		File fOld = new File(this.strFileName);
         String strName = fOld.getName();
         String strFile = strName.substring(0,
         		strName.lastIndexOf("."));
         D.dprint(strFile);
-        String strExch;
+        List<String> list = new ArrayList<String>();
         Matcher m = patternMatch.matcher(strFile);
         if (m.find()) {
 			D.dprint(m.group(0));
+	        String strExch;
 			int i = m.groupCount();
 			if (i == 0) {
 				strExch = strExchFormat;
@@ -138,25 +142,28 @@ public class FileProc {
 			} else {
 				strExch = strExchFormat;
 			}
+			list.add(strExch);
+			list.add(m.group(0));
         } else {
-        	strExch = "";
+			list.add("");
+			list.add("");
         }
-        D.dprint(strExch);
         D.dprint_method_end();
-        return strExch;
+        return list;
 	}
 
 
-	public String getExchDirName( Pattern patternMatch,
+	public List<String> getExchDirName( Pattern patternMatch,
 			String strExchFormat ) {
 		D.dprint_method_start();
         File fOld = new File(this.strFileName);
         String strDir = fOld.getParent();
         D.dprint(strDir);
-        String strExch;
+        List<String> list = new ArrayList<String>();
         Matcher m = patternMatch.matcher(strDir);
         if (m.find()) {
 			D.dprint(m.group(0));
+			String strExch;
 			int i = m.groupCount();
 			if (i == 0) {
 				strExch = strExchFormat;
@@ -173,12 +180,14 @@ public class FileProc {
 			} else {
 				strExch = strExchFormat;
 			}
+			list.add(strExch);
+			list.add(m.group(0));
         } else {
-        	strExch = "";
+			list.add("");
+			list.add("");
         }
-        D.dprint(strExch);
         D.dprint_method_end();
-        return strExch;
+        return list;
 	}
 
 

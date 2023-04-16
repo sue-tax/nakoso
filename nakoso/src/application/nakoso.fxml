@@ -42,6 +42,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -136,13 +137,13 @@
                      <content>
                         <TableView fx:id="tableMatch" pickOnBounds="false" prefHeight="400.0" prefWidth="436.0">
                           <columns>
-                            <TableColumn fx:id="colNo" editable="false" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" text="番号" />
-                            <TableColumn fx:id="colName" minWidth="30.0" prefWidth="100.0" sortable="false" text="名称" />
-                              <TableColumn fx:id="colKind" editable="false" prefWidth="29.0" text="種別" />
-                              <TableColumn fx:id="colFormat" editable="false" prefWidth="87.0" text="変換フォーマット" />
-                              <TableColumn fx:id="colPattern" editable="false" prefWidth="100.0" text="マッチパターン" />
-                              <TableColumn fx:id="colExchg" prefWidth="50.0" text="変換文字列" />
-                              <TableColumn fx:id="colMatch" prefWidth="75.0" text="マッチ文字列" />
+                            <TableColumn fx:id="colNo" editable="false" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" sortable="false" text="番号" />
+                            <TableColumn fx:id="colName" editable="false" minWidth="30.0" prefWidth="100.0" sortable="false" text="名称" />
+                              <TableColumn fx:id="colKind" editable="false" prefWidth="29.0" sortable="false" text="種別" />
+                              <TableColumn fx:id="colFormat" editable="false" prefWidth="87.0" sortable="false" text="変換フォーマット" />
+                              <TableColumn fx:id="colPattern" editable="false" prefWidth="100.0" sortable="false" text="マッチパターン" />
+                              <TableColumn fx:id="colExchg" editable="false" prefWidth="50.0" sortable="false" text="変換文字列" />
+                              <TableColumn fx:id="colMatch" editable="false" prefWidth="75.0" sortable="false" text="マッチ文字列" />
                           </columns>
                         </TableView>
                      </content>
@@ -155,7 +156,20 @@
       </AnchorPane>
         <AnchorPane>
           <children>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="11.0" layoutY="24.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="11.0" layoutY="46.0" prefHeight="496.0" prefWidth="211.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="46.0">
+                     <content>
+                        <TableView fx:id="tableItem" prefHeight="200.0" prefWidth="200.0">
+                          <columns>
+                            <TableColumn fx:id="colNameItem" editable="false" prefWidth="75.0" text="名称" />
+                            <TableColumn fx:id="colFormatItem" editable="false" prefWidth="75.0" text="変換フォーマット" />
+                              <TableColumn fx:id="colPatternItem" editable="false" prefWidth="75.0" text="マッチパターン" />
+                              <TableColumn fx:id="colExchgItem" editable="false" prefWidth="75.0" text="変換文字列" />
+                              <TableColumn fx:id="colMatchItem" editable="false" prefWidth="75.0" text="マッチ文字列" />
+                          </columns>
+                        </TableView>
+                     </content></ScrollPane>
+                  <Label layoutX="9.0" layoutY="17.0" text="マッチ番号" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <Spinner fx:id="spinMatch" layoutX="67.0" layoutY="2.0" prefWidth="80.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="5.0" />
           </children>
         </AnchorPane>
       </items>

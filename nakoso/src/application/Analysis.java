@@ -96,6 +96,15 @@ public class Analysis {
 			D.dprint_method_end();
 			return matchTable;
 		}
+
+		public ItemTable getItemTable() {
+			D.dprint_method_start();
+			ItemTable itemTable = new ItemTable(
+					strName, strFormat, strPattern);
+			itemTable.set(strExch, strMatch);
+			D.dprint_method_end();
+			return itemTable;
+		}
 	}
 
 	private Map<Integer, List<Item>> mapAnal;
@@ -156,6 +165,20 @@ public class Analysis {
 		MatchTable matchTable = item.getMatchTable(intMap);
 		D.dprint_method_end();
 		return matchTable;
+	}
+
+	public List<ItemTable> getItemTableList( Integer intMap ) {
+		D.dprint_method_start();
+		List<ItemTable> itemTableList = new ArrayList<ItemTable>();
+		List<Item> itemList = mapAnal.get(intMap);
+		Iterator<Item> iter = itemList.iterator();
+		while (iter.hasNext()) {
+			Item item = iter.next();
+			ItemTable itemTable = item.getItemTable();
+			itemTableList.add(itemTable);
+		}
+		D.dprint_method_end();
+		return itemTableList;
 	}
 
 
@@ -237,48 +260,4 @@ public class Analysis {
 	public boolean contains( int indexMap ) {
 		return setAnal.contains(indexMap);
 	}
-
-
-//	public String getColoredString( String text ) {
-//		D.dprint_method_start();
-//		D.dprint(text);
-//		String strColored = text;
-//		mapAnal.forEach((k, itemList) -> {
-//			D.dprint(k);
-//			D.dprint(itemList);
-//			int minIndex = Integer.MAX_VALUE;
-//			int end;
-//			Item minItem = null;
-//			int index;
-//			Iterator<Item> iter = itemList.iterator();
-//			while(iter.hasNext()) {
-//			    Item item = (Item)iter.next();
-//			    // 正規表現で合致するのを探す
-//			    index = item.match(text);
-//			    if (index < minIndex) {
-//			    	minIndex = index;
-//			    	minItem = item;
-//			    }
-//			}
-//			if (minItem != null) {
-//				// 合致した中で、前にあるものを採用
-////				String strMatch = minItem.getExch();
-//
-//				// 順番によっては、start,endがずれる
-//
-//				strColored =
-//						strColored.substring(0, minItem.start)
-//						+ "<font color=\\\"red\\\">"
-//						+ strColored.substring(minItem.start,
-//								minItem.end)
-//						+ "</font>"
-//						+ strColored.substring(minItem.end);
-//
-//			}
-//		});
-//		D.dprint_method_end();
-//		return map;
-//	}
-
-
 }
