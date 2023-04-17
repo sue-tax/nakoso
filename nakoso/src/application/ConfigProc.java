@@ -361,6 +361,10 @@ public class ConfigProc {
 		return version;
 	}
 
+	public void clear() {
+		analysis.clear();
+		exAnal.clear();
+	}
 
 	public String[] getMatchString( int iFile, String strText,
 			FileProc fileProc ) {

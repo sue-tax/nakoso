@@ -33,6 +33,9 @@ public class Analysis {
 			this.strPattern = strPattern;
 			this.strFormat = strFormat;
 			this.pattern = null;
+			strExch = "";
+			strMatch = "";
+			start = Integer.MAX_VALUE;
 		}
 
 		public boolean compile() {
@@ -42,6 +45,14 @@ public class Analysis {
 				return false;
 			}
 			return true;
+		}
+
+		public void clear() {
+			D.dprint_method_start();
+			strExch = "";
+			strMatch = "";
+			start = Integer.MAX_VALUE;
+			D.dprint_method_end();
 		}
 
 		public int match( String text ) {
@@ -75,6 +86,7 @@ public class Analysis {
 				end = m.end();
 			} else {
 				strExch = "";
+				strMatch = "";
 			}
 			D.dprint(strExch);
 			D.dprint(start);
@@ -101,6 +113,7 @@ public class Analysis {
 			D.dprint_method_start();
 			ItemTable itemTable = new ItemTable(
 					strName, strFormat, strPattern);
+			D.dprint(strMatch);
 			itemTable.set(strExch, strMatch);
 			D.dprint_method_end();
 			return itemTable;
@@ -148,6 +161,18 @@ public class Analysis {
 		D.dprint(true);
 		D.dprint_method_end();
 		return true;
+	}
+
+	public void clear() {
+		mapAnal.forEach((k, itemList) -> {
+			D.dprint(k);
+			D.dprint(itemList);
+			Iterator<Item> iter = itemList.iterator();
+			while(iter.hasNext()) {
+			    Item item = (Item)iter.next();
+			    item.clear();
+			}
+		});
 	}
 
 	public MatchTable getMatchTable( Integer intMap ) {

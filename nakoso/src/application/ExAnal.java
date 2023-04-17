@@ -53,6 +53,11 @@ public class ExAnal {
 			return true;
 		}
 
+		public void clear() {
+			this.strExch = "";
+			this.strMatch = "";
+		}
+
 		public MatchTable getMatchTable( int no ) {
 			D.dprint_method_start();
 			MatchTable matchTable = new MatchTable(
@@ -247,6 +252,14 @@ public class ExAnal {
 		D.dprint(true);
 		D.dprint_method_end();
 		return true;
+	}
+
+	public void clear() {
+		mapExAnal.forEach((k, exItem) -> {
+			D.dprint(k);
+			D.dprint(exItem);
+			exItem.clear();
+		});
 	}
 
 	public MatchTable getMatchTable( Integer intMap ) {

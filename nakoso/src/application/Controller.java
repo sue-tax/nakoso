@@ -353,6 +353,7 @@ public class Controller {
 		textFileFormat.setEditable(false);
 
 		printMsg("設定ファイルを読込みました");
+		Main.configProc.clear();
 		analyzeText();
 
 		D.dprint_method_end();
