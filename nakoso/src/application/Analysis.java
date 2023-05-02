@@ -19,8 +19,8 @@ public class Analysis {
 
 	class Item {
 		private String strName;
-		private String strPattern;	// (高|髙)橋\s*直美
-		private String strFormat;		// %1$s橋直美
+		private String strPattern;
+		private String strFormat;
 		private Pattern pattern;
 		private String strExch;
 		private String strMatch;
@@ -44,6 +44,25 @@ public class Analysis {
 			} catch (Exception e) {
 				return false;
 			}
+			return true;
+		}
+
+		public boolean rewrite(
+				String strPattern, String strFormat ) {
+			D.dprint_method_start();
+			D.dprint(strPattern);
+			D.dprint(strFormat);
+			this.strPattern = strPattern;
+			this.strFormat = strFormat;
+			this.pattern = null;
+			try {
+				this.pattern = Pattern.compile(strPattern);
+			} catch (Exception e) {
+				D.dprint(e);
+				D.dprint_method_end();
+				return false;
+			}
+			D.dprint_method_end();
 			return true;
 		}
 
@@ -194,7 +213,8 @@ public class Analysis {
 
 	public List<ItemTable> getItemTableList( Integer intMap ) {
 		D.dprint_method_start();
-		List<ItemTable> itemTableList = new ArrayList<ItemTable>();
+		List<ItemTable> itemTableList
+				= new ArrayList<ItemTable>();
 		List<Item> itemList = mapAnal.get(intMap);
 		Iterator<Item> iter = itemList.iterator();
 		while (iter.hasNext()) {
@@ -206,6 +226,22 @@ public class Analysis {
 		return itemTableList;
 	}
 
+	public void rewriteItem( Integer intMap,
+			List<String> listPattern, List<String> listFormat ) {
+		D.dprint_method_start();
+		List<Item> itemList = mapAnal.get(intMap);
+		Iterator<Item> iter = itemList.iterator();
+		Iterator<String> iterPattern = listPattern.iterator();
+		Iterator<String> iterFormat = listFormat.iterator();
+		while (iter.hasNext()) {
+			Item item = iter.next();
+			String strPattern = iterPattern.next();
+			String strFormat = iterFormat.next();
+			item.rewrite(strPattern, strFormat);
+		}
+		D.dprint_method_end();
+		return;
+	}
 
 	public Map<Integer, String> getStringList( String text ) {
 		D.dprint_method_start();

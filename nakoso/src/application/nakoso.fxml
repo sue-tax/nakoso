@@ -114,7 +114,7 @@
                   <TextField fx:id="textPDFFile" editable="false" layoutX="95.0" layoutY="2.0" onDragDropped="#onDragDropped" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="5.0" />
           <Label alignment="CENTER" font="$x1" layoutX="24.0" layoutY="516.0" style="&#10;" text="変更ファイル名" textAlignment="CENTER" wrapText="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" />
                   <Button fx:id="buttonRename" layoutX="165.0" layoutY="520.0" mnemonicParsing="false" onAction="#onRenameFileAction" text="変更" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
-                  <TextField fx:id="textNewFile" editable="false" layoutX="98.0" layoutY="517.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" />
+                  <TextField fx:id="textNewFile" layoutX="98.0" layoutY="517.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" />
                   <CheckBox fx:id="cbAuto" layoutX="153.0" layoutY="477.0" mnemonicParsing="false" text="自動変更" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="5.0" />
           </children>
         </AnchorPane>
@@ -132,10 +132,10 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="textFileFormat" editable="false" layoutX="130.0" layoutY="3.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="5.0" />
+                  <TextField fx:id="textFileFormat" layoutX="130.0" layoutY="3.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="5.0" />
                   <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="17.0" layoutY="82.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="80.0">
                      <content>
-                        <TableView fx:id="tableMatch" pickOnBounds="false" prefHeight="400.0" prefWidth="436.0">
+                        <TableView fx:id="tableMatch" editable="true" pickOnBounds="false" prefHeight="400.0" prefWidth="436.0">
                           <columns>
                             <TableColumn fx:id="colNo" editable="false" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" sortable="false" text="番号" />
                             <TableColumn fx:id="colName" editable="false" minWidth="30.0" prefWidth="100.0" sortable="false" text="名称" />
@@ -143,7 +143,7 @@
                               <TableColumn fx:id="colFormat" editable="false" prefWidth="87.0" sortable="false" text="変換フォーマット" />
                               <TableColumn fx:id="colPattern" editable="false" prefWidth="100.0" sortable="false" text="マッチパターン" />
                               <TableColumn fx:id="colExchg" editable="false" prefWidth="50.0" sortable="false" text="変換文字列" />
-                              <TableColumn fx:id="colMatch" editable="false" prefWidth="75.0" sortable="false" text="マッチ文字列" />
+                              <TableColumn fx:id="colMatch" prefWidth="75.0" sortable="false" text="マッチ文字列" />
                           </columns>
                         </TableView>
                      </content>
@@ -152,19 +152,20 @@
                   <TextField fx:id="textVersion" editable="false" layoutX="61.0" layoutY="36.0" prefHeight="25.0" prefWidth="61.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="40.0" />
                   <ChoiceBox fx:id="choiceOption" layoutX="16.0" layoutY="486.0" prefHeight="25.0" prefWidth="69.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="60.0" />
                   <Label layoutY="491.0" text="オプション" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="5.0" />
+                  <Button fx:id="buttonReAnal" layoutX="376.0" layoutY="487.0" mnemonicParsing="false" onAction="#onReAnalAction" text="再解析" AnchorPane.bottomAnchor="35.0" AnchorPane.rightAnchor="10.0" />
         </children>
       </AnchorPane>
         <AnchorPane>
           <children>
                   <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="11.0" layoutY="46.0" prefHeight="496.0" prefWidth="211.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="46.0">
                      <content>
-                        <TableView fx:id="tableItem" prefHeight="200.0" prefWidth="200.0">
+                        <TableView fx:id="tableItem" editable="true" prefHeight="200.0" prefWidth="200.0">
                           <columns>
-                            <TableColumn fx:id="colNameItem" editable="false" prefWidth="75.0" text="名称" />
-                            <TableColumn fx:id="colFormatItem" editable="false" prefWidth="75.0" text="変換フォーマット" />
-                              <TableColumn fx:id="colPatternItem" editable="false" prefWidth="75.0" text="マッチパターン" />
-                              <TableColumn fx:id="colExchgItem" editable="false" prefWidth="75.0" text="変換文字列" />
-                              <TableColumn fx:id="colMatchItem" editable="false" prefWidth="75.0" text="マッチ文字列" />
+                            <TableColumn fx:id="colNameItem" editable="false" prefWidth="75.0" sortable="false" text="名称" />
+                            <TableColumn fx:id="colFormatItem" prefWidth="75.0" sortable="false" text="変換フォーマット" />
+                              <TableColumn fx:id="colPatternItem" prefWidth="75.0" sortable="false" text="マッチパターン" />
+                              <TableColumn fx:id="colExchgItem" editable="false" prefWidth="75.0" sortable="false" text="変換文字列" />
+                              <TableColumn fx:id="colMatchItem" editable="false" prefWidth="75.0" sortable="false" text="マッチ文字列" />
                           </columns>
                         </TableView>
                      </content></ScrollPane>

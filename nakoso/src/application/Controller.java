@@ -9,6 +9,8 @@ package application;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -25,6 +27,7 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -50,6 +53,9 @@ public class Controller {
 
     @FXML
     private Button buttonConfigOpen;
+
+    @FXML
+    private Button buttonReAnal;
 
     @FXML
     private Button buttonPDFOpen;
@@ -153,6 +159,11 @@ public class Controller {
     @FXML
     void onConfigOpenAction(ActionEvent event) {
     	openConfig();
+    }
+
+    @FXML
+    void onReAnalAction(ActionEvent event) {
+    	reAnalyze();
     }
 
     @FXML
@@ -350,7 +361,7 @@ public class Controller {
 		textFileFormat.setEditable(true);
 		textFileFormat.setText(strFileFormat);
 		textFileFormat.end();
-		textFileFormat.setEditable(false);
+//		textFileFormat.setEditable(false);
 
 		printMsg("設定ファイルを読込みました");
 		Main.configProc.clear();
@@ -360,6 +371,36 @@ public class Controller {
     	return;
     }
 
+
+    private void reAnalyze() {
+    	D.dprint_method_start();
+    	if (Main.configProc == null) {
+    		D.dprint_method_end();
+    		return;
+    	}
+    	// ファイル名フォーマットのセット
+    	String strFileFormat = textFileFormat.getText();
+    	D.dprint(strFileFormat);
+    	Main.configProc.setFileFormat(strFileFormat);
+    	//
+    	Integer indexMatch = spinMatch.getValue();
+    	List<ItemTable> listItemTable = listItem;
+    	Iterator<ItemTable> iter = listItemTable.iterator();
+    	List<String> listFormat = new ArrayList<String>();
+    	List<String> listPattern = new ArrayList<String>();
+    	while (iter.hasNext()) {
+    		ItemTable itemTable = iter.next();
+    		listFormat.add(itemTable.strFormatProperty().getValue());
+    		listPattern.add(itemTable.strPatternProperty().getValue());
+    	}
+    	Main.configProc.rewriteMatch(indexMatch,
+    			listPattern, listFormat);
+
+    	analyzeText();
+
+    	D.dprint_method_end();
+    	return;
+    }
 
     private void analyzeText() {
     	D.dprint_method_start();
@@ -389,7 +430,7 @@ public class Controller {
 		textNewFile.setEditable(true);
 		textNewFile.setText(strFileName);
 		textNewFile.end();
-		textNewFile.setEditable(false);
+//		textNewFile.setEditable(false);
 
 		String strHtml = Main.configProc.getColoredString(
 				strText);
@@ -451,15 +492,32 @@ public class Controller {
 
     private ObservableList<ItemTable> listItem;
 
-    private void setTableItem( Integer intMatch ) {
+    private void setTableItem( Integer oldMatch,
+    		Integer intMatch ) {
     	D.dprint_method_start();
+    	D.dprint(oldMatch);
     	D.dprint(intMatch);
-    	List<ItemTable> listItemTable
+
+    	if (listItem != null) {
+			List<ItemTable> listItemTable = listItem;
+			Iterator<ItemTable> iter = listItemTable.iterator();
+			List<String> listFormat = new ArrayList<String>();
+			List<String> listPattern = new ArrayList<String>();
+			while (iter.hasNext()) {
+				ItemTable itemTable = iter.next();
+				listFormat.add(itemTable.strFormatProperty().getValue());
+				listPattern.add(itemTable.strPatternProperty().getValue());
+			}
+			Main.configProc.rewriteMatch(oldMatch,
+					listPattern, listFormat);
+		}
+
+		List<ItemTable> newListItemTable
     			= Main.configProc.getItemTableList(intMatch);
-    	D.dprint(listItemTable);
+    	D.dprint(newListItemTable);
 		listItem.clear();
-		if (listItemTable != null) {
-			listItem.addAll(listItemTable);
+		if (newListItemTable != null) {
+			listItem.addAll(newListItemTable);
 		}
 		D.dprint_method_end();
     	return;
@@ -499,6 +557,11 @@ public class Controller {
 	    colMatchItem.setCellValueFactory(
 	    		p -> p.getValue().strMatchProperty());
 
+	    colFormatItem.setCellFactory(
+	    		TextFieldTableCell.forTableColumn());
+	    colPatternItem.setCellFactory(
+	    		TextFieldTableCell.forTableColumn());
+
 	    valueSpinMatch =
 	    		new IntegerSpinnerValueFactory.
 	    		IntegerSpinnerValueFactory(1, 9, 1);
@@ -507,7 +570,7 @@ public class Controller {
 	    spinMatch.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 	    spinMatch.valueProperty().addListener(
 	    		(ov, oldValue, newValue) -> {
-	    			setTableItem(newValue);
+	    			setTableItem(oldValue, newValue);
 //	    	    	String strSrc = textSrc.getText();
 //	    	    	String[] aSrc = strSrc.split("\n");
 //	    	    	if (newValue < aSrc.length) {
@@ -519,6 +582,8 @@ public class Controller {
 //	    	    	}
 	    		});
 
+	    // TODO マッチ番号を変更する前に入力データをセットする
+
 	    D.dprint_method_end();
     }
 
@@ -526,6 +591,7 @@ public class Controller {
     @FXML
     void initialize() {
         assert buttonConfigOpen != null : "fx:id=\"buttonConfigOpen\" was not injected: check your FXML file 'nakoso.fxml'.";
+        assert buttonReAnal != null : "fx:id=\"buttonReAnal\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert buttonPDFOpen != null : "fx:id=\"buttonPDFOpen\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert buttonRename != null : "fx:id=\"buttonRename\" was not injected: check your FXML file 'nakoso.fxml'.";
         assert cbAuto != null : "fx:id=\"cbAuto\" was not injected: check your FXML file 'nakoso.fxml'.";

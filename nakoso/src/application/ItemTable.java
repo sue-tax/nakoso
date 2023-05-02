@@ -24,6 +24,11 @@ public class ItemTable {
 		this.strMatchItem = new SimpleStringProperty(strMatch);
 	}
 
+	public void rewrite( String strFormat, String strPattern ) {
+		this.strFormatItem = new SimpleStringProperty(strFormat);
+		this.strPatternItem= new SimpleStringProperty(strPattern);
+	}
+
 	public StringProperty strNameProperty() {
 		return strNameItem;
 	}

@@ -295,6 +295,16 @@ public class ConfigProc {
 	}
 
 
+	public void rewriteMatch( Integer index,
+			List<String> listPattern, List<String> listFormat ) {
+		D.dprint_method_start();
+		if (analysis.contains(index)) {
+			analysis.rewriteItem(index, listPattern, listFormat);
+		}
+		D.dprint_method_end();
+		return;
+	}
+
 	private String readVersion( int iLine, String[] aData ) {
 		String strRet = null;
 		if (aData.length < 3) {
@@ -348,6 +358,11 @@ public class ConfigProc {
 		return strRet;
 	}
 
+
+	public void setFileFormat( String strFileFormat ) {
+		this.strFileFormat = strFileFormat;
+		return;
+	}
 
 	public String getFileFormat() {
 		return strFileFormat;
